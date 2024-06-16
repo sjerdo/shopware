@@ -47,11 +47,16 @@ import Store from 'src/app/store';
 import { createExtendableSetup, overrideComponentSetup } from 'src/app/adapter/composition-extension-system';
 import * as Vue from 'vue';
 import type { DefineComponent, Ref } from 'vue';
+import InAppPurchase from './in-app-purchase';
 import ExtensionApi from './extension-api';
 
 /** Initialize feature flags at the beginning */
 if (window.hasOwnProperty('_features_')) {
     Feature.init(_features_);
+}
+
+if (window.hasOwnProperty('_inAppPurchases_')) {
+    InAppPurchase.init(_inAppPurchases_);
 }
 
 // strict mode was set to false because it was defined wrong previously
@@ -205,6 +210,8 @@ class ShopwareClass implements CustomShopwareProperties {
     public Application = application;
 
     public Feature = Feature;
+
+    public InAppPurchase = InAppPurchase;
 
     public Vue = Vue;
 
