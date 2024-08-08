@@ -101,6 +101,8 @@ class AppEntity extends Entity
 
     protected ?string $checkoutGatewayUrl = null;
 
+    protected ?string $inAppPurchasesGatewayUrl = null;
+
     /**
      * @var list<Module>
      */
@@ -414,6 +416,16 @@ class AppEntity extends Entity
     public function setCheckoutGatewayUrl(?string $checkoutGatewayUrl): void
     {
         $this->checkoutGatewayUrl = $checkoutGatewayUrl;
+    }
+
+    public function getInAppPurchasesGatewayUrl(): ?string
+    {
+        return $this->inAppPurchasesGatewayUrl;
+    }
+
+    public function setInAppPurchasesGatewayUrl(?string $inAppPurchasesGatewayUrl): void
+    {
+        $this->inAppPurchasesGatewayUrl = $inAppPurchasesGatewayUrl;
     }
 
     /**
