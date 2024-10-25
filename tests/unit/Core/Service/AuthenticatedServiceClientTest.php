@@ -50,7 +50,7 @@ class AuthenticatedServiceClientTest extends TestCase
         static::assertNotNull($lastRequest);
         static::assertEquals('POST', $lastRequest->getMethod());
         static::assertEquals('https://example.com/sync', (string) $lastRequest->getUri());
-        static::assertEquals('{"source":{"url":"http:foo","shopId":"' . $id . '","appVersion":"1.0.1"},"licenseKey":"license_key"}', (string) $lastRequest->getBody());
+        static::assertEquals('{"source":{"url":"http:foo","shopId":"' . $id . '","appVersion":"1.0.1","inAppPurchases":[]},"licenseKey":"license_key"}', (string) $lastRequest->getBody());
     }
 
     public function testSyncLicenseServicesDoesNotSendRequestWhenLicenseSyncEndPointIsNull(): void

@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Test\TestCaseBase\AdminApiTestBehaviour;
-use Shopware\Core\Framework\Test\TestDataCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Tests\Integration\Core\Framework\App\AppSystemTestBehaviour;
+use Shopware\Core\Test\AppSystemTestBehaviour;
+use Shopware\Core\Test\Stub\Framework\IdsCollection;
 use Shopware\Tests\Integration\Core\Framework\App\GuzzleTestClientBehaviour;
 
 /**
@@ -25,7 +25,7 @@ class InAppPurchasesControllerTest extends TestCase
     {
         InAppPurchase::registerPurchases();
 
-        $ids = new TestDataCollection();
+        $ids = new IdsCollection();
         $integrationId = $ids->create('integration');
         $client = $this->getBrowserAuthenticatedWithIntegration($integrationId);
         $client->request('GET', '/api/store/active-in-app-purchases');
@@ -45,7 +45,7 @@ class InAppPurchasesControllerTest extends TestCase
         $uuid = Uuid::randomHex();
         InAppPurchase::registerPurchases(['purchase1' => $uuid, 'purchase2' => $uuid]);
 
-        $ids = new TestDataCollection(['integration' => $uuid]);
+        $ids = new IdsCollection(['integration' => $uuid]);
         $integrationId = $ids->create('integration');
         $client = $this->getBrowserAuthenticatedWithIntegration($integrationId);
         $client->request('GET', '/api/store/active-in-app-purchases');
