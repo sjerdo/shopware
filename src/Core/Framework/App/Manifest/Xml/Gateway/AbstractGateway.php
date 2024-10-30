@@ -1,8 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Shopware\Core\Framework\App\Manifest\Xml;
+namespace Shopware\Core\Framework\App\Manifest\Xml\Gateway;
 
-trait UrlXmlElement
+use Shopware\Core\Framework\App\Manifest\Xml\XmlElement;
+use Shopware\Core\Framework\Log\Package;
+
+/**
+ * @internal only for use by the app-system
+ */
+#[Package('checkout')]
+abstract class AbstractGateway extends XmlElement
 {
     protected ?string $url = null;
 

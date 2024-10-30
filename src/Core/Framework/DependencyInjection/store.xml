@@ -253,6 +253,7 @@
             <argument type="service" id="in_app_purchase.repository"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="string">%in_app_purchases.active_purchases%</argument>
+            <argument type="service" id="Shopware\Core\Framework\Store\Authentication\StoreRequestOptionsProvider"/>
         </service>
 
         <service id="Shopware\Core\Framework\Store\InAppPurchase\Handler\InAppPurchaseSyncHandler">

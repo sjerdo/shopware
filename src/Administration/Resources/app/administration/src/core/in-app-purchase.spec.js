@@ -1,5 +1,5 @@
 /**
- * @package admin
+ * @package checkout
  */
 
 import InAppPurchase from './in-app-purchase';

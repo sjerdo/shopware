@@ -51,8 +51,9 @@ class Gateways extends XmlElement
     {
         $targetElement = $element->getElementsByTagName($name)->item(0);
         if ($targetElement) {
-            // @phpstan-ignore-next-line argument.type doesn't expect callable array
-            return \call_user_func([$class, 'fromXml'], $targetElement);
+            if (class_exists($class) && method_exists($class, 'fromXml')) {
+                return $class::fromXml($targetElement);
+            }
         }
 
         return null;

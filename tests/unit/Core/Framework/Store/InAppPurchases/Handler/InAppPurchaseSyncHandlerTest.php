@@ -40,31 +40,4 @@ class InAppPurchaseSyncHandlerTest extends TestCase
 
         $handler->run();
     }
-
-    public function testRunWithException(): void
-    {
-        $exception = new \Exception('Test');
-
-        $syncService = $this->createMock(InAppPurchasesSyncService::class);
-        $syncService->expects(static::once())
-            ->method('updateActiveInAppPurchases')
-            ->with(Context::createCLIContext())
-            ->willThrowException($exception);
-
-        $syncService->expects(static::once())
-            ->method('disableExpiredInAppPurchases');
-
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(static::once())
-            ->method('error')
-            ->with('Test', ['exception' => $exception]);
-
-        $handler = new InAppPurchaseSyncHandler(
-            $this->createMock(EntityRepository::class),
-            $logger,
-            $syncService
-        );
-
-        $handler->run();
-    }
 }

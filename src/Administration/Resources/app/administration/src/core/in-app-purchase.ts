@@ -1,5 +1,5 @@
 /**
- * @package admin
+ * @package checkout
  * @module core/in-app-purchase
  * A static registry containing a list of all in-app purchases
  */

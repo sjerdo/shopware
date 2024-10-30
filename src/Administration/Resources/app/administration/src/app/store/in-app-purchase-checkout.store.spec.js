@@ -1,3 +1,6 @@
+/**
+ * @package checkout
+ */
 import './in-app-purchase-checkout.store';
 
 describe('src/app/store/in-app-purchases.store.ts', () => {

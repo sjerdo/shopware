@@ -7,6 +7,7 @@ use GuzzleHttp\ClientInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Store\Authentication\AbstractStoreRequestOptionsProvider;
 use Shopware\Core\Framework\Store\InAppPurchase\InAppPurchaseCollection;
 
 /**
@@ -22,15 +23,17 @@ class InAppPurchasesSyncService
         private readonly ClientInterface $client,
         private readonly EntityRepository $iapRepository,
         private readonly Connection $connection,
-        private readonly string $fetchEndpoint
+        private readonly string $fetchEndpoint,
+        private readonly AbstractStoreRequestOptionsProvider $storeRequestOptionsProvider
     ) {
     }
 
     public function updateActiveInAppPurchases(Context $context): void
     {
-        list($existingApps, $existingPlugins) = $this->fetchExistingAppsAndPlugins();
+        $existingApps = $this->fetchExistingExtensionsByType('app');
+        $existingPlugins = $this->fetchExistingExtensionsByType('plugin');
 
-        $activeIaps = $this->fetchActiveInAppPurchasesFromSBP();
+        $activeIaps = $this->fetchActiveInAppPurchasesFromSBP($context);
 
         $iapData = array_map(static function ($iap) use ($existingApps, $existingPlugins) {
             $identifier = strtok($iap['identifier'], '-') ?: '';
@@ -53,34 +56,29 @@ class InAppPurchasesSyncService
     }
 
     /**
-     * @return array{0: array<string, string>, 1: array<string, string>}
+     * @return array<array-key, mixed>
      */
-    private function fetchExistingAppsAndPlugins(): array
+    private function fetchExistingExtensionsByType(string $type): array
     {
-        $existingExtensions = $this->connection->fetchAllAssociative('
-            SELECT `name`, LOWER(HEX(`id`)) AS `id`, "app" AS type
-            FROM app
-            WHERE `active` = 1
-            UNION
-            SELECT `name`, LOWER(HEX(`id`)) AS `id`, "plugin" AS type
-            FROM plugin
-            WHERE `active` = 1
-        ');
-
-        /** @var array<string, string> $existingApps */
-        $existingApps = array_column(array_filter($existingExtensions, static fn ($ext) => $ext['type'] === 'app'), 'id', 'name');
-        /** @var array<string, string> $existingPlugins */
-        $existingPlugins = array_column(array_filter($existingExtensions, static fn ($ext) => $ext['type'] === 'plugin'), 'id', 'name');
-
-        return [$existingApps, $existingPlugins];
+        return $this->connection->fetchAllKeyValue(\sprintf('
+            SELECT `name`, LOWER(HEX(`id`)) AS `id`
+            FROM `%s`
+            WHERE `active` = 1', $type));
     }
 
     /**
-     * @return array<int, array{identifier: string, expiresAt: string}>
+     * @return array<int, array{identifier: string, expiresAt: string|null}>
      */
-    private function fetchActiveInAppPurchasesFromSBP(): array
+    private function fetchActiveInAppPurchasesFromSBP(Context $context): array
     {
-        $response = $this->client->request('GET', $this->fetchEndpoint);
+        $response = $this->client->request(
+            'GET',
+            $this->fetchEndpoint,
+            [
+                'query' => $this->storeRequestOptionsProvider->getDefaultQueryParameters($context),
+                'headers' => $this->storeRequestOptionsProvider->getAuthenticationHeader($context),
+            ],
+        );
 
         return json_decode($response->getBody()->getContents(), true);
     }

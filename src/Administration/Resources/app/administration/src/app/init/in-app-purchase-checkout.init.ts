@@ -1,5 +1,5 @@
 /**
- * @package core
+ * @package checkout
  *
  * @private
  */

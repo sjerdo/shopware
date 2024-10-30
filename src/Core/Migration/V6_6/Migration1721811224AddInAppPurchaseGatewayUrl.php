@@ -19,6 +19,6 @@ class Migration1721811224AddInAppPurchaseGatewayUrl extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $this->addColumn($connection, 'app', 'in_app_purchases_gateway_url', 'VARCHAR(255) NULL');
+        $this->addColumn($connection, 'app', 'in_app_purchases_gateway_url', 'VARCHAR(255)');
     }
 }

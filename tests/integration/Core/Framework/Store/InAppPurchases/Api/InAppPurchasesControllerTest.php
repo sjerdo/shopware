@@ -88,7 +88,7 @@ class InAppPurchasesControllerTest extends TestCase
             ]
         );
         $response = $this->getBrowser()->getResponse();
-        $content = $this->getBrowser()->getResponse()->getContent();
+        $content = $response->getContent();
 
         static::assertNotFalse($content);
         $content = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
@@ -109,7 +109,7 @@ class InAppPurchasesControllerTest extends TestCase
             ]
         );
         $response = $this->getBrowser()->getResponse();
-        $content = $this->getBrowser()->getResponse()->getContent();
+        $content = $response->getContent();
 
         static::assertNotFalse($content);
         $content = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);

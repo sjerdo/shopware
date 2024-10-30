@@ -44,7 +44,7 @@ class InAppPurchaseDefinition extends EntityDefinition
 
     public function since(): ?string
     {
-        return '6.6.6.0';
+        return '6.6.9.0';
     }
 
     protected function defineProtections(): EntityProtectionCollection

@@ -22,7 +22,6 @@ class InAppPurchasesController extends AbstractController
     #[Route(path: '/api/store/active-in-app-purchases', name: 'api.store.active-in-app-purchases', methods: ['GET'])]
     public function activeInAppPurchases(Context $context): JsonResponse
     {
-        /** @var AdminApiSource $source */
         $source = $context->getSource();
 
         if (!$source instanceof AdminApiSource) {
@@ -33,7 +32,7 @@ class InAppPurchasesController extends AbstractController
             throw StoreException::missingIntegrationInContextSource($source::class);
         }
 
-        $appId = (string) $source->getIntegrationId();
+        $appId = $source->getIntegrationId();
 
         return new JsonResponse(
             ['inAppPurchases' => InAppPurchase::getByExtension($appId)]

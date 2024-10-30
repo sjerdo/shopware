@@ -7,13 +7,10 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Store\Authentication\AbstractStoreRequestOptionsProvider;
 use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchasesSyncService;
 
 /**
@@ -33,6 +30,7 @@ class InAppPurchasesSyncServiceTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
         $client->expects(static::once())
             ->method('request')
+            ->with('GET', 'https://test.com', ['query' => ['a'], 'headers' => ['b']])
             ->willReturn(new Response(200, [], '[{"identifier":"TestApp-test", "active":true, "expiresAt":"2099-01-01"},{"identifier":"TestApp-test2", "active":true, "expiresAt":"2099-01-01"}]'));
 
         $iapRepository = $this->createMock(EntityRepository::class);
@@ -41,28 +39,42 @@ class InAppPurchasesSyncServiceTest extends TestCase
             ->with($expectedUpsertResponse);
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects(static::once())
-            ->method('fetchAllAssociative')
-            ->willReturn([['type' => 'app', 'name' => 'TestApp', 'id' => 'test-app-id']]);
+        $connection->expects(static::exactly(2))
+            ->method('fetchAllKeyValue')
+            ->willReturnOnConsecutiveCalls(['TestApp' => 'test-app-id'], []);
 
-        $service = new InAppPurchasesSyncService($client, $iapRepository, $connection, 'https://test.com');
+        $optionsProvider = $this->createMock(AbstractStoreRequestOptionsProvider::class);
+        $optionsProvider->expects(static::once())
+            ->method('getDefaultQueryParameters')
+            ->willReturn(['a']);
+        $optionsProvider->expects(static::once())
+            ->method('getAuthenticationHeader')
+            ->willReturn(['b']);
+
+        $service = new InAppPurchasesSyncService(
+            $client,
+            $iapRepository,
+            $connection,
+            'https://test.com',
+            $optionsProvider
+        );
         $service->updateActiveInAppPurchases(Context::createDefaultContext());
     }
 
     public function testDisableExpiredInAppPurchases(): void
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('active', true),
-            new RangeFilter('expiresAt', [RangeFilter::LT => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT)])
-        );
-
         $connection = $this->createMock(Connection::class);
         $connection->expects(static::once())
             ->method('executeQuery')
             ->with('UPDATE in_app_purchase SET active = false WHERE expires_at < NOW()');
 
-        $service = new InAppPurchasesSyncService($this->createMock(ClientInterface::class), $this->createMock(EntityRepository::class), $connection, 'https://test.com');
+        $service = new InAppPurchasesSyncService(
+            $this->createMock(ClientInterface::class),
+            $this->createMock(EntityRepository::class),
+            $connection,
+            'https://test.com',
+            $this->createMock(AbstractStoreRequestOptionsProvider::class)
+        );
         $service->disableExpiredInAppPurchases();
     }
 }
