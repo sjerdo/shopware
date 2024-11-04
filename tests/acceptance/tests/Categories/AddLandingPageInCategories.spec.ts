@@ -5,55 +5,41 @@ test('Shop administrator should be able to create a landing page.', {tag: '@Cate
     ShopAdmin,
     IdProvider,
     TestDataService,
-    AdminCategories, AdminApiContext, AdminLandingPageDetail, CreateLandingPage,
+    AdminCategories, CreateLandingPage, VerifyLandingPage, AdminApiContext,
 }) => {
     const layoutUuid = IdProvider.getIdPair().uuid;
     const layoutName = `test ${layoutUuid}`;
+    const layoutType = 'landingpage';
+    const landingPageData = {
+        name: `Landing Page ${IdProvider.getIdPair().uuid}`,
+        salesChannel: 'Storefront',
+        seoUrl: `landing-${IdProvider.getIdPair().id}`,
+    };
+
     await test.step('Create a landing page layout via API.', async () => {
-        await TestDataService.createBasicPageLayout('landingpage', {
+
+        await TestDataService.createBasicPageLayout(layoutType, {
                 name: layoutName,
                 id: layoutUuid,
-                type: 'landingpage',
-                sections: [
-                    {
-                        id: IdProvider.getIdPair().uuid,
-                        createdAt: '2022-01-01T00:00:00+00:00',
-                        pageId: IdProvider.getIdPair().uuid,
-                        position: 0,
-                        type: 'full_width',
-                        blocks: [
-                            {
-                                id: IdProvider.getIdPair().uuid,
-                                sectionId: IdProvider.getIdPair().uuid,
-                                type: 'text',
-                                position: 0,
-                                slots: [
-                                    {
-                                        id: IdProvider.getIdPair().uuid,
-                                        type: 'text',
-                                        blockId: IdProvider.getIdPair().uuid,
-                                        slot: 'content',
-                                    },
-                                ],
-                            },
-                        ],
-
-                    },
-                ],
+                type: layoutType,
             },
         );
     });
 
     await test.step('Create a new landing page and assign layout.', async () => {
         await ShopAdmin.goesTo(AdminCategories.url());
-        await ShopAdmin.attemptsTo(CreateLandingPage(layoutName, true));
-        await ShopAdmin.expects(AdminLandingPageDetail.layoutAssignmentStatus).toBeVisible();
+        await ShopAdmin.attemptsTo(CreateLandingPage(layoutName, landingPageData, true));
     });
 
-    await test.step('Cleanup created landing page via API', async () => {
+    await test.step('Verify a new landing page created and assigned layout.', async () => {
+        await ShopAdmin.attemptsTo(VerifyLandingPage(layoutName, landingPageData, true));
+    });
+
+    await test.step('Clean up the created landing page via API.', async () => {
         const url = ShopAdmin.page.url();
         const landingPageId = url.split('/')[url.split('/').length - 2];
         const response = await AdminApiContext.delete(`./landing-page/${landingPageId}`);
         expect(response.status()).toBe(204);
     });
+
 });
