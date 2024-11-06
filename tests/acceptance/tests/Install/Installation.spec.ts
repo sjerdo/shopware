@@ -1,7 +1,7 @@
 import { test, expect } from '@fixtures/AcceptanceTest';
 
 test('Install a new Shopware instance.', { tag: '@Install' }, async ({ InstallPage }) => {
-    const  page = InstallPage;
+    const page = InstallPage;
 
     await page.goto(process.env.APP_URL);
 
