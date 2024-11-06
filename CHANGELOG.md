@@ -1,6 +1,9 @@
 # Changelog
 This is the official changelog index of Shopware 6. Here you find a registry of all Shopware 6 releases with a reference to the detailed changelog of each version. If you want to know more about how the changelog is created have a look [here](/adr/workflow/2020-08-03-implement-New-Changelog.md).
 
+## 6.6.8.1
+*  [NEXT-39321 - Fix cookie issue and follow redirect in HOT reload](./changelog/release-6-6-8-1/2024-10-29-fix-cookie-issue-and-follow-redirect-in-hot-reload.md)
+
 ## 6.6.8.0
 *  [#3764 - Unique Ids for address forms](./changelog/release-6-6-8-0/2024-07-12-unique-ids-for-address-forms.md)
 *  [#3780 - Do not use case insensitive validation of vat ids](./changelog/release-6-6-8-0/2024-06-25-do-not-use-case-insensitive-validation-of-vat-ids.md) ([Max](https://github.com/aragon999))
