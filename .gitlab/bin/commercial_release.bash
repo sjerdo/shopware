@@ -33,7 +33,8 @@ composer config version ${COMMERCIAL_VERSION} --no-interaction
 composer require "$CORE_REQUIRE" --no-interaction --no-update
 
 # Add Changelog entry
-sed -i "1s/^/# $COMMERCIAL_VERSION\n\n* Release for platform $PLATFORM_TAG\n\n/" CHANGELOG.md
+sed -i "1s/^/# $COMMERCIAL_VERSION\n\n* Release for platform $PLATFORM_TAG\n\n/" CHANGELOG_en-GB.md || true
+sed -i "1s/^/# $COMMERCIAL_VERSION\n\n* Release für platform $PLATFORM_TAG\n\n/" CHANGELOG_de-DE.md || true
 
 git add composer.json
 
