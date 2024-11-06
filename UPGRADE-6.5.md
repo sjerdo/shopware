@@ -1,3 +1,10 @@
+# 6.5.8.15
+## Elasticsearch with special chars
+* To apply searching by Elasticsearch with special chars, you would need to update your ES index mapping by running: `es:index`
+
+## New parameter `shopware.search.preserved_chars` when tokenizing
+* By default, the parameter `shopware.search.preserved_chars` is set to `['-', '_', '+', '.', '@']`. You can add or remove special characters to this parameter by override it in `shopware.yaml` to allow them when tokenizing string.
+
 # 6.5.8.12
 ## Messenger routing overwrite
 
