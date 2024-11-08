@@ -8,9 +8,9 @@ use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Api\Context\ShopApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Store\InAppPurchase\Api\InAppPurchasesController;
 use Shopware\Core\Framework\Store\StoreException;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,19 +21,11 @@ use Symfony\Component\HttpFoundation\Response;
 #[CoversClass(InAppPurchasesController::class)]
 class InAppPurchasesControllerTest extends TestCase
 {
-    private InAppPurchasesController $inAppPurchasesController;
-
     private Context $context;
 
     protected function setUp(): void
     {
         $this->context = Context::createDefaultContext(new AdminApiSource('test-user', 'test-extension'));
-        $this->inAppPurchasesController ??= new InAppPurchasesController();
-    }
-
-    protected function tearDown(): void
-    {
-        InAppPurchase::reset();
     }
 
     public function testActiveInAppPurchasesWithIncorrectContext(): void
@@ -41,7 +33,7 @@ class InAppPurchasesControllerTest extends TestCase
         static::expectException(StoreException::class);
         static::expectExceptionMessage('Expected context source to be "Shopware\Core\Framework\Api\Context\AdminApiSource" but got "Shopware\Core\Framework\Api\Context\ShopApiSource".');
 
-        $this->inAppPurchasesController->activeInAppPurchases(
+        $this->createController()->activeInAppPurchases(
             Context::createDefaultContext(new ShopApiSource('test-channel'))
         );
     }
@@ -51,16 +43,14 @@ class InAppPurchasesControllerTest extends TestCase
         static::expectException(StoreException::class);
         static::expectExceptionMessage('No integration available in context source "Shopware\Core\Framework\Api\Context\AdminApiSource"');
 
-        $this->inAppPurchasesController->activeInAppPurchases(
+        $this->createController()->activeInAppPurchases(
             $this->context = Context::createDefaultContext(new AdminApiSource('test-user'))
         );
     }
 
     public function testActiveInAppPurchasesWithNoPurchasesShouldReturnEmptyArray(): void
     {
-        InAppPurchase::registerPurchases();
-
-        $response = $this->inAppPurchasesController->activeInAppPurchases($this->context);
+        $response = $this->createController()->activeInAppPurchases($this->context);
         static::assertEquals(Response::HTTP_OK, $response->getStatusCode());
 
         $content = $response->getContent();
@@ -73,9 +63,9 @@ class InAppPurchasesControllerTest extends TestCase
 
     public function testActiveInAppPurchasesWithPurchasesShouldReturnArrayWithApps(): void
     {
-        InAppPurchase::registerPurchases(['purchase1' => 'test-extension', 'purchase2' => 'test-extension']);
+        $controller = $this->createController(['purchase1' => 'test-extension', 'purchase2' => 'test-extension']);
 
-        $response = $this->inAppPurchasesController->activeInAppPurchases($this->context);
+        $response = $controller->activeInAppPurchases($this->context);
         static::assertEquals(Response::HTTP_OK, $response->getStatusCode());
 
         $content = $response->getContent();
@@ -85,9 +75,9 @@ class InAppPurchasesControllerTest extends TestCase
             json_decode($content, true, 512, \JSON_THROW_ON_ERROR)
         );
 
-        InAppPurchase::registerPurchases(['purchase1' => 'test-extension', 'purchase2' => 'another-extension']);
+        $controller = $this->createController(['purchase1' => 'test-extension', 'purchase2' => 'another-extension']);
 
-        $response = $this->inAppPurchasesController->activeInAppPurchases($this->context);
+        $response = $controller->activeInAppPurchases($this->context);
         static::assertEquals(Response::HTTP_OK, $response->getStatusCode());
 
         $content = $response->getContent();
@@ -105,7 +95,7 @@ class InAppPurchasesControllerTest extends TestCase
 
         $request = new Request();
 
-        $this->inAppPurchasesController->checkInAppPurchaseActive($request);
+        $this->createController()->checkInAppPurchaseActive($request);
     }
 
     public function testCheckInAppPurchaseActiveWithNonPurchasedAppReturnsFalse(): void
@@ -113,7 +103,7 @@ class InAppPurchasesControllerTest extends TestCase
         $request = new Request();
         $request->request->set('identifier', 'nonPurchasedApp');
 
-        $response = $this->inAppPurchasesController->checkInAppPurchaseActive($request);
+        $response = $this->createController()->checkInAppPurchaseActive($request);
         static::assertIsString($response->getContent());
         static::assertEquals(
             ['isActive' => false],
@@ -126,9 +116,9 @@ class InAppPurchasesControllerTest extends TestCase
         $request = new Request();
         $request->request->set('identifier', 'purchase1');
 
-        InAppPurchase::registerPurchases(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
+        $controller = $this->createController(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
 
-        $response = $this->inAppPurchasesController->checkInAppPurchaseActive($request);
+        $response = $controller->checkInAppPurchaseActive($request);
         static::assertIsString($response->getContent());
         static::assertEquals(
             ['isActive' => true],
@@ -136,11 +126,19 @@ class InAppPurchasesControllerTest extends TestCase
         );
 
         $request->request->set('identifier', 'purchase2');
-        $response = $this->inAppPurchasesController->checkInAppPurchaseActive($request);
+        $response = $controller->checkInAppPurchaseActive($request);
         static::assertIsString($response->getContent());
         static::assertEquals(
             ['isActive' => true],
             json_decode($response->getContent(), true, 512, \JSON_THROW_ON_ERROR)
         );
+    }
+
+    /**
+     * @param array<string,string> $purchases
+     */
+    private function createController(array $purchases = []): InAppPurchasesController
+    {
+        return new InAppPurchasesController(StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures($purchases));
     }
 }

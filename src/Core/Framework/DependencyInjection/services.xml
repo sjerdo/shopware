@@ -415,6 +415,7 @@ frame-ancestors 'none';
         </service>
 
         <service id="Shopware\Core\Framework\Adapter\Twig\Extension\InAppPurchaseExtension">
+            <argument type="service" id="Shopware\Core\Framework\Store\InAppPurchase"/>
             <tag name="twig.extension"/>
         </service>
 

@@ -3,11 +3,10 @@
 namespace Shopware\Core\Framework\Store;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Log\Package;
 
 #[Package('checkout')]
-class InAppPurchaseRegistry
+final class InAppPurchaseResolver
 {
     /**
      * @internal
@@ -17,19 +16,10 @@ class InAppPurchaseRegistry
     ) {
     }
 
-    public function register(): void
-    {
-        try {
-            InAppPurchase::registerPurchases($this->fetchActiveInAppPurchases());
-        } catch (Exception) {
-            // we don't have a database connection, so we can't fetch the active in-app purchases
-        }
-    }
-
     /**
      * @return array<string, string>
      */
-    private function fetchActiveInAppPurchases(): array
+    public function fetchActiveInAppPurchases(): array
     {
         /** @var array<string, string> */
         return $this->connection->fetchAllKeyValue('

@@ -19,6 +19,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Package('checkout')]
 class InAppPurchasesController extends AbstractController
 {
+    public function __construct(private readonly InAppPurchase $inAppPurchase)
+    {
+    }
+
     #[Route(path: '/api/store/active-in-app-purchases', name: 'api.store.active-in-app-purchases', methods: ['GET'])]
     public function activeInAppPurchases(Context $context): JsonResponse
     {
@@ -35,7 +39,7 @@ class InAppPurchasesController extends AbstractController
         $appId = $source->getIntegrationId();
 
         return new JsonResponse(
-            ['inAppPurchases' => InAppPurchase::getByExtension($appId)]
+            ['inAppPurchases' => $this->inAppPurchase->getByExtension($appId)]
         );
     }
 
@@ -48,7 +52,7 @@ class InAppPurchasesController extends AbstractController
         }
 
         return new JsonResponse(
-            ['isActive' => InAppPurchase::isActive($identifier)]
+            ['isActive' => $this->inAppPurchase->isActive($identifier)]
         );
     }
 }

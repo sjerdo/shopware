@@ -13,7 +13,7 @@ use Shopware\Core\Framework\App\ShopId\ShopIdProvider;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\Authentication\LocaleProvider;
-use Shopware\Core\Framework\Store\InAppPurchase;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 
 /**
  * @internal
@@ -24,7 +24,7 @@ class QuerySignerTest extends TestCase
 {
     public function testSignUri(): void
     {
-        InAppPurchase::registerPurchases(['purchase-1' => 'extension-1', 'purchase-2' => 'extension-1', 'purchase-3' => 'extension-2']);
+        $inAppPurchase = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase-1' => 'extension-1', 'purchase-2' => 'extension-1', 'purchase-3' => 'extension-2']);
 
         $context = new Context(new AdminApiSource(null));
 
@@ -45,7 +45,7 @@ class QuerySignerTest extends TestCase
         $app->setAppSecret('devSecret');
         $app->setId('extension-1');
 
-        $querySigner = new QuerySigner('http://shop.url', '1.0.0', $localeProvider, $shopIdProvider);
+        $querySigner = new QuerySigner('http://shop.url', '1.0.0', $localeProvider, $shopIdProvider, $inAppPurchase);
         $signedQuery = $querySigner->signUri('http://app.url/?foo=bar', $app, $context);
 
         \parse_str($signedQuery->getQuery(), $url);
@@ -66,8 +66,6 @@ class QuerySignerTest extends TestCase
         static::assertSame('purchase-1,purchase-2', $url['in-app-purchases']);
         static::assertSame(Defaults::LANGUAGE_SYSTEM, $url['sw-context-language']);
         static::assertSame('en-GB', $url['sw-user-language']);
-
-        InAppPurchase::reset();
     }
 
     public function testThrowsWithoutAppSecret(): void
@@ -80,7 +78,8 @@ class QuerySignerTest extends TestCase
             'http://shop.url',
             '1.0.0',
             $this->createMock(LocaleProvider::class),
-            $this->createMock(ShopIdProvider::class)
+            $this->createMock(ShopIdProvider::class),
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
         );
 
         $this->expectException(AppException::class);

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\App\Api\AppJWTGenerateRoute;
 use Shopware\Core\Framework\App\AppException;
 use Shopware\Core\Framework\App\ShopId\ShopIdProvider;
-use Shopware\Core\Framework\Store\InAppPurchase;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\Test\Generator;
 
 /**
@@ -21,7 +21,8 @@ class AppJWTGenerateRouteTest extends TestCase
     {
         $appJWTGenerateRoute = new AppJWTGenerateRoute(
             $this->createMock(Connection::class),
-            $this->createMock(ShopIdProvider::class)
+            $this->createMock(ShopIdProvider::class),
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
         );
 
         $context = Generator::createSalesChannelContext();
@@ -36,7 +37,8 @@ class AppJWTGenerateRouteTest extends TestCase
     {
         $appJWTGenerateRoute = new AppJWTGenerateRoute(
             $this->createMock(Connection::class),
-            $this->createMock(ShopIdProvider::class)
+            $this->createMock(ShopIdProvider::class),
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
         );
 
         $context = Generator::createSalesChannelContext();
@@ -48,7 +50,7 @@ class AppJWTGenerateRouteTest extends TestCase
 
     public function testGenerate(): void
     {
-        InAppPurchase::registerPurchases([
+        $inAppPurchase = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures([
             'active-license-1' => 'extension-1',
             'active-license-2' => 'extension-1',
             'active-license-3' => 'extension-2',
@@ -70,7 +72,8 @@ class AppJWTGenerateRouteTest extends TestCase
 
         $appJWTGenerateRoute = new AppJWTGenerateRoute(
             $connection,
-            $this->createMock(ShopIdProvider::class)
+            $this->createMock(ShopIdProvider::class),
+            $inAppPurchase,
         );
 
         $context = Generator::createSalesChannelContext();
@@ -95,6 +98,5 @@ class AppJWTGenerateRouteTest extends TestCase
         static::assertSame($context->getCurrency()->getId(), $payload['currencyId']);
         static::assertSame($context->getLanguageId(), $payload['languageId']);
         static::assertSame(['active-license-1', 'active-license-2'], $payload['inAppPurchases']);
-        InAppPurchase::reset();
     }
 }

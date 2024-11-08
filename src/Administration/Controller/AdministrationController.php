@@ -70,6 +70,7 @@ class AdministrationController extends AbstractController
         ParameterBagInterface $params,
         private readonly SystemConfigService $systemConfigService,
         private readonly FilesystemOperator $fileSystem,
+        private readonly InAppPurchase $inAppPurchase,
     ) {
         // param is only available if the elasticsearch bundle is enabled
         $this->esAdministrationEnabled = $params->has('elasticsearch.administration.enabled')
@@ -90,7 +91,7 @@ class AdministrationController extends AbstractController
 
         return $this->render($template, [
             'features' => Feature::getAll(),
-            'inAppPurchases' => InAppPurchase::all(),
+            'inAppPurchases' => $this->inAppPurchase->all(),
             'systemLanguageId' => Defaults::LANGUAGE_SYSTEM,
             'defaultLanguageIds' => [Defaults::LANGUAGE_SYSTEM],
             'systemCurrencyId' => Defaults::CURRENCY,

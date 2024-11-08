@@ -32,7 +32,6 @@ use Shopware\Core\Framework\Feature\FeatureFlagRegistry;
 use Shopware\Core\Framework\Increment\IncrementerGatewayCompilerPass;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\MessageHandlerCompilerPass;
-use Shopware\Core\Framework\Store\InAppPurchaseRegistry;
 use Shopware\Core\Framework\Telemetry\Metrics\MeterProvider;
 use Shopware\Core\Framework\Test\DependencyInjection\CompilerPass\ContainerVisibilityCompilerPass;
 use Shopware\Core\Framework\Test\RateLimiter\DisableRateLimiterCompilerPass;
@@ -148,9 +147,6 @@ class Framework extends Bundle
         $featureFlagRegistry->register();
         // Inject the meter early in the application lifecycle. This is needed to use the meter in special case (static contexts).
         MeterProvider::bindMeter($this->container);
-
-        $inAppPurchaseRegistry = $this->container->get(InAppPurchaseRegistry::class);
-        $inAppPurchaseRegistry->register();
 
         $this->registerEntityExtensions(
             $this->container->get(DefinitionInstanceRegistry::class),

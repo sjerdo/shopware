@@ -31,6 +31,7 @@ class AppPayloadServiceHelper
         private readonly DefinitionInstanceRegistry $definitionRegistry,
         private readonly JsonEntityEncoder $entityEncoder,
         private readonly ShopIdProvider $shopIdProvider,
+        private readonly InAppPurchase $inAppPurchase,
         private readonly string $shopUrl,
     ) {
     }
@@ -44,7 +45,7 @@ class AppPayloadServiceHelper
             $this->shopUrl,
             $this->shopIdProvider->getShopId(),
             $app->getVersion(),
-            InAppPurchase::getByExtension($app->getId()),
+            $this->inAppPurchase->getByExtension($app->getId()),
         );
     }
 

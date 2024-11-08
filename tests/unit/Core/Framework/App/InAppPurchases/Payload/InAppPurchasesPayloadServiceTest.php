@@ -19,6 +19,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Log\ExceptionLogger;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
 
 /**
@@ -203,6 +204,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             $definitionInstanceRegistry,
             $this->createMock(JsonEntityEncoder::class),
             $shopIdProvider,
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
             'https://test-shop.com'
         );
 

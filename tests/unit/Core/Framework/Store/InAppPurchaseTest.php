@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 
 /**
  * @internal
@@ -14,72 +15,53 @@ use Shopware\Core\Framework\Store\InAppPurchase;
 #[Package('checkout')]
 class InAppPurchaseTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        InAppPurchase::reset();
-    }
-
     public function testAll(): void
     {
-        InAppPurchase::registerPurchases(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
 
-        static::assertSame(['purchase1', 'purchase2'], InAppPurchase::all());
+        static::assertSame(['purchase1', 'purchase2'], $iap->all());
     }
 
     public function testAllPurchases(): void
     {
-        InAppPurchase::registerPurchases(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
-        static::assertSame(['purchase1' => 'extension-1', 'purchase2' => 'extension-2'], InAppPurchase::allPurchases());
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
+        static::assertSame(['purchase1' => 'extension-1', 'purchase2' => 'extension-2'], $iap->allPurchases());
     }
 
     public function testIsActive(): void
     {
-        static::assertFalse(InAppPurchase::isActive('activePurchase'));
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['activePurchase' => 'extension-1']);
 
-        InAppPurchase::registerPurchases(['activePurchase' => 'extension-1']);
-
-        static::assertTrue(InAppPurchase::isActive('activePurchase'));
-        static::assertFalse(InAppPurchase::isActive('inactivePurchase'));
+        static::assertTrue($iap->isActive('activePurchase'));
+        static::assertFalse($iap->isActive('inactivePurchase'));
     }
 
     public function testEmpty(): void
     {
-        InAppPurchase::registerPurchases([]);
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures();
 
-        static::assertFalse(InAppPurchase::isActive('inactivePurchase'));
-        static::assertEmpty(InAppPurchase::all());
+        static::assertFalse($iap->isActive('inactivePurchase'));
+        static::assertEmpty($iap->all());
     }
 
     public function testRegisterPurchasesOverridesActivePurchases(): void
     {
-        InAppPurchase::registerPurchases(['purchase1' => 'extension-1']);
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase1' => 'extension-1']);
 
-        static::assertTrue(InAppPurchase::isActive('purchase1'));
+        static::assertTrue($iap->isActive('purchase1'));
 
-        InAppPurchase::registerPurchases(['purchase2' => 'extension-1']);
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase2' => 'extension-1']);
 
-        static::assertFalse(InAppPurchase::isActive('purchase1'));
-        static::assertTrue(InAppPurchase::isActive('purchase2'));
-    }
-
-    public function testReset(): void
-    {
-        InAppPurchase::registerPurchases(['purchase1' => 'extension-1']);
-
-        static::assertTrue(InAppPurchase::isActive('purchase1'));
-        static::assertSame(['purchase1'], InAppPurchase::all());
-
-        InAppPurchase::reset();
-
-        static::assertFalse(InAppPurchase::isActive('purchase1'));
+        static::assertFalse($iap->isActive('purchase1'));
+        static::assertTrue($iap->isActive('purchase2'));
     }
 
     public function testByExtension(): void
     {
-        InAppPurchase::registerPurchases(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
+        $iap = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase1' => 'extension-1', 'purchase2' => 'extension-2']);
 
-        static::assertSame(['purchase1'], InAppPurchase::getByExtension('extension-1'));
-        static::assertSame(['purchase2'], InAppPurchase::getByExtension('extension-2'));
-        static::assertEmpty(InAppPurchase::getByExtension('extension-3'));
+        static::assertSame(['purchase1'], $iap->getByExtension('extension-1'));
+        static::assertSame(['purchase2'], $iap->getByExtension('extension-2'));
+        static::assertEmpty($iap->getByExtension('extension-3'));
     }
 }

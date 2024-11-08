@@ -26,6 +26,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Store\Services\FirstRunWizardService;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\Framework\Util\HtmlSanitizer;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
@@ -482,6 +483,7 @@ class AdministrationControllerTest extends TestCase
                 'core.systemWideLoginRegistration.isCustomerBoundToSalesChannel' => $isCustomerBoundToSalesChannel,
             ]),
             $this->fileSystemOperator,
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
         );
     }
 

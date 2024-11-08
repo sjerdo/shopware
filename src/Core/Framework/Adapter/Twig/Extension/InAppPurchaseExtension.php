@@ -11,6 +11,13 @@ use Twig\TwigFunction;
 class InAppPurchaseExtension extends AbstractExtension
 {
     /**
+     * @internal
+     */
+    public function __construct(private readonly InAppPurchase $inAppPurchase)
+    {
+    }
+
+    /**
      * @return TwigFunction[]
      */
     public function getFunctions(): array
@@ -23,7 +30,7 @@ class InAppPurchaseExtension extends AbstractExtension
 
     public function isActive(string $identifier): bool
     {
-        return InAppPurchase::isActive($identifier);
+        return $this->inAppPurchase->isActive($identifier);
     }
 
     /**
@@ -31,6 +38,6 @@ class InAppPurchaseExtension extends AbstractExtension
      */
     public function all(): array
     {
-        return InAppPurchase::all();
+        return $this->inAppPurchase->all();
     }
 }

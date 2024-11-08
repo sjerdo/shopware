@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Serializer\StructNormalizer;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\TaxProvider\TaxProviderDefinition;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
@@ -63,7 +64,8 @@ class TaxProviderPayloadServiceTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
-            'https://test-shop.com'
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            'https://test-shop.com',
         );
 
         $url = 'https://example.com/provide-tax';
@@ -203,6 +205,7 @@ class TaxProviderPayloadServiceTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
             'https://test-shop.com'
         );
 

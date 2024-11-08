@@ -2,68 +2,93 @@
 
 namespace Shopware\Core\Framework\Store;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Log\Package;
+use Symfony\Contracts\Service\ResetInterface;
 
 #[Package('checkout')]
-final class InAppPurchase
+final class InAppPurchase implements ResetInterface
 {
     /**
      * @var array<string, string>
      */
-    private static array $activePurchases = [];
+    private array $activePurchases = [];
 
     /**
      * @var array<string, list<string>>
      */
-    private static array $extensionPurchases = [];
+    private array $extensionPurchases = [];
+
+    /**
+     * @internal
+     */
+    public function __construct(
+        private readonly InAppPurchaseResolver $inAppPurchaseFetcher
+    ) {
+    }
 
     /**
      * @return list<string>
      */
-    public static function all(): array
+    public function all(): array
     {
-        return \array_keys(self::$activePurchases);
+        $this->ensureRegistration();
+
+        return \array_keys($this->activePurchases);
     }
 
     /**
      * @return array<string, string>
      */
-    public static function allPurchases(): array
+    public function allPurchases(): array
     {
-        return self::$activePurchases;
+        $this->ensureRegistration();
+
+        return $this->activePurchases;
     }
 
     /**
      * @return list<string>
      */
-    public static function getByExtension(string $extensionId): array
+    public function getByExtension(string $extensionId): array
     {
-        return self::$extensionPurchases[$extensionId] ?? [];
+        $this->ensureRegistration();
+
+        return $this->extensionPurchases[$extensionId] ?? [];
     }
 
-    public static function reset(): void
+    public function reset(): void
     {
-        self::$activePurchases = [];
-        self::$extensionPurchases = [];
+        $this->activePurchases = [];
+        $this->extensionPurchases = [];
     }
 
-    public static function isActive(string $identifier): bool
+    public function isActive(string $identifier): bool
     {
-        return \in_array($identifier, \array_keys(self::$activePurchases), true);
+        $this->ensureRegistration();
+
+        return \in_array($identifier, \array_keys($this->activePurchases), true);
     }
 
-    /**
-     * @param array<string, string> $inAppPurchases
-     */
-    public static function registerPurchases(array $inAppPurchases = []): void
+    private function ensureRegistration(): void
     {
-        self::$activePurchases = $inAppPurchases;
+        if (\count($this->activePurchases)) {
+            return;
+        }
 
-        // group by extension id, which is the value of the array
-        self::$extensionPurchases = [];
+        try {
+            $inAppPurchases = $this->inAppPurchaseFetcher->fetchActiveInAppPurchases();
+            $this->activePurchases = $inAppPurchases;
 
-        foreach ($inAppPurchases as $identifier => $extensionId) {
-            self::$extensionPurchases[$extensionId][] = $identifier;
+            // group by extension id, which is the value of the array
+            $this->extensionPurchases = [];
+
+            foreach ($inAppPurchases as $identifier => $extensionId) {
+                $this->extensionPurchases[$extensionId][] = $identifier;
+            }
+        } catch (Exception) {
+            // we don't have a database connection, so we can't fetch the active in-app purchases
         }
     }
 }

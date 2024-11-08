@@ -23,7 +23,8 @@ class AppJWTGenerateRoute
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly ShopIdProvider $shopIdProvider
+        private readonly ShopIdProvider $shopIdProvider,
+        private readonly InAppPurchase $inAppPurchase,
     ) {
     }
 
@@ -54,7 +55,7 @@ class AppJWTGenerateRoute
             ->canOnlyBeUsedAfter(new \DateTimeImmutable())
             ->expiresAt($expiration);
 
-        $builder = $builder->withClaim('inAppPurchases', InAppPurchase::getByExtension($appId));
+        $builder = $builder->withClaim('inAppPurchases', $this->inAppPurchase->getByExtension($appId));
 
         if (\in_array('sales_channel:read', $privileges, true)) {
             $builder = $builder->withClaim('salesChannelId', $context->getSalesChannel()->getId());
