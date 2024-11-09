@@ -45,7 +45,7 @@ class AppPayloadServiceHelper
             $this->shopUrl,
             $this->shopIdProvider->getShopId(),
             $app->getVersion(),
-            $this->inAppPurchase->getByExtension($app->getId()),
+            $this->inAppPurchase->getByExtension($app->getName()),
         );
     }
 

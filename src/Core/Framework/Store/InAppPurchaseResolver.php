@@ -2,17 +2,19 @@
 
 namespace Shopware\Core\Framework\Store;
 
-use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 #[Package('checkout')]
 final class InAppPurchaseResolver
 {
+    public const CONFIG_STORE_IAP_KEY = 'core.store.iapKey';
+
     /**
      * @internal
      */
     public function __construct(
-        private readonly Connection $connection
+        private readonly SystemConfigService $systemConfigService
     ) {
     }
 
@@ -21,11 +23,38 @@ final class InAppPurchaseResolver
      */
     public function fetchActiveInAppPurchases(): array
     {
-        /** @var array<string, string> */
-        return $this->connection->fetchAllKeyValue('
-            SELECT `identifier`, LOWER(HEX(IFNULL(`app_id`, `plugin_id`))) AS extensionId
-            FROM in_app_purchase
-            WHERE `active` = 1 AND expires_at > NOW()
-        ');
+        $purchases = $this->systemConfigService->getString(self::CONFIG_STORE_IAP_KEY);
+        if (!$purchases) {
+            return [];
+        }
+
+        $purchases = json_decode($purchases, true);
+        if (!\is_array($purchases)) {
+            return [];
+        }
+
+        return iterator_to_array($this->formatActivePurchases($purchases));
+    }
+
+    /**
+     * @param array<array{identifier: string, active: bool, expiresAt: string}> $purchases
+     *
+     * @return iterable<string, string>
+     */
+    private function formatActivePurchases(array $purchases): iterable
+    {
+        foreach ($purchases as $purchase) {
+            if (!$purchase['active']) {
+                continue;
+            }
+
+            if (new \DateTime($purchase['expiresAt']) < new \DateTime()) {
+                continue;
+            }
+
+            [$extensionName, $purchaseName] = explode('_', $purchase['identifier']);
+
+            yield $purchaseName => $extensionName;
+        }
     }
 }

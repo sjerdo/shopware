@@ -40,7 +40,7 @@ class QuerySigner
             'shop-url' => $this->shopUrl,
             'timestamp' => (string) (new \DateTime())->getTimestamp(),
             'sw-version' => $this->shopwareVersion,
-            'in-app-purchases' => \urlencode(\implode(',', $this->inAppPurchase->getByExtension($app->getId()))),
+            'in-app-purchases' => \urlencode(\implode(',', $this->inAppPurchase->getByExtension($app->getName()))),
             AuthMiddleware::SHOPWARE_CONTEXT_LANGUAGE => $context->getLanguageId(),
             AuthMiddleware::SHOPWARE_USER_LANGUAGE => $this->localeProvider->getLocaleFromContext($context),
         ]);

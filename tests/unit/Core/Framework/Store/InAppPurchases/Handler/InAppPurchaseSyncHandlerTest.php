@@ -25,9 +25,6 @@ class InAppPurchaseSyncHandlerTest extends TestCase
             ->method('updateActiveInAppPurchases')
             ->with(Context::createCLIContext());
 
-        $syncService->expects(static::once())
-            ->method('disableExpiredInAppPurchases');
-
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(static::never())
             ->method('error');

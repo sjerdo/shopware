@@ -35,7 +35,7 @@ class AppJWTGenerateRoute
             throw AppException::jwtGenerationRequiresCustomerLoggedIn();
         }
 
-        ['id' => $appId, 'app_secret' => $appSecret, 'privileges' => $privileges] = $this->fetchAppDetails($name);
+        ['app_secret' => $appSecret, 'privileges' => $privileges] = $this->fetchAppDetails($name);
 
         $key = InMemory::plainText($appSecret);
 
@@ -55,7 +55,7 @@ class AppJWTGenerateRoute
             ->canOnlyBeUsedAfter(new \DateTimeImmutable())
             ->expiresAt($expiration);
 
-        $builder = $builder->withClaim('inAppPurchases', $this->inAppPurchase->getByExtension($appId));
+        $builder = $builder->withClaim('inAppPurchases', $this->inAppPurchase->getByExtension($name));
 
         if (\in_array('sales_channel:read', $privileges, true)) {
             $builder = $builder->withClaim('salesChannelId', $context->getSalesChannel()->getId());
@@ -89,12 +89,11 @@ class AppJWTGenerateRoute
     }
 
     /**
-     * @return array{id: non-empty-string, app_secret: non-empty-string, privileges: array<string>}
+     * @return array{app_secret: non-empty-string, privileges: array<string>}
      */
     private function fetchAppDetails(string $name): array
     {
         $row = $this->connection->fetchAssociative('SELECT
-    LOWER(HEX(`app`.id)) as id,
     `app`.app_secret,
     `acl_role`.privileges
 FROM `app`

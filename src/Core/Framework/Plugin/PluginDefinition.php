@@ -23,7 +23,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationFi
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Aggregate\PluginTranslation\PluginTranslationDefinition;
-use Shopware\Core\Framework\Store\InAppPurchase\InAppPurchaseDefinition;
 
 #[Package('core')]
 class PluginDefinition extends EntityDefinition
@@ -78,7 +77,6 @@ class PluginDefinition extends EntityDefinition
 
             (new TranslationsAssociationField(PluginTranslationDefinition::class, 'plugin_id'))->addFlags(new Required(), new CascadeDelete()),
             (new OneToManyAssociationField('paymentMethods', PaymentMethodDefinition::class, 'plugin_id', 'id'))->addFlags(new SetNullOnDelete()),
-            (new OneToManyAssociationField('inAppPurchases', InAppPurchaseDefinition::class, 'plugin_id'))->addFlags(new CascadeDelete()),
         ]);
     }
 }

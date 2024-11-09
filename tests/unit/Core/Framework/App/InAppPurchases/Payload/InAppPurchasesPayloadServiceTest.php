@@ -77,6 +77,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $url = 'https://example.com/filter-mah-features';
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.6-dev');
         $app->setAppSecret('very-secret');
@@ -137,6 +138,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $url = 'https://example.com/filter-mah-features';
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.6-dev');
         $app->setAppSecret('very-secret');
@@ -176,6 +178,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $url = 'https://example.com/filter-mah-features';
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.6-dev');
         $app->setAppSecret('very-secret');
@@ -209,6 +212,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         );
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.5-dev');
         $app->setName('Test app');

@@ -5,7 +5,7 @@ namespace Shopware\Core\Framework\Test\Store;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Store\InAppPurchaseResolver;
-use Shopware\Core\Test\Stub\Doctrine\FakeConnection;
+use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 
 /**
  * @internal
@@ -14,15 +14,13 @@ use Shopware\Core\Test\Stub\Doctrine\FakeConnection;
 class StaticInAppPurchaseFactory
 {
     /**
-     * @param array<string,string> $activePurchases ['featureIdentifier' => 'extensionId']
+     * @param array<string,string> $activePurchases ['featureIdentifier' => 'extensionName']
      */
     public static function createInAppPurchaseWithFeatures(array $activePurchases = []): InAppPurchase
     {
-        $inAppPurchase = new InAppPurchase(
-            new InAppPurchaseResolver(new FakeConnection([]))
-        );
+        $inAppPurchase = new InAppPurchase(new InAppPurchaseResolver(new StaticSystemConfigService()));
 
-        // group by extension id, which is the value of the array
+        // group by extension name, which is the value of the array
         $extensionPurchases = [];
         foreach ($activePurchases as $identifier => $extensionId) {
             $extensionPurchases[$extensionId][] = $identifier;

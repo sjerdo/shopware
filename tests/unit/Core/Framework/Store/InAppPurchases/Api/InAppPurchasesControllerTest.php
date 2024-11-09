@@ -6,11 +6,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Api\Context\ShopApiSource;
+use Shopware\Core\Framework\App\AppCollection;
+use Shopware\Core\Framework\App\AppEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase\Api\InAppPurchasesController;
 use Shopware\Core\Framework\Store\StoreException;
 use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -139,6 +143,15 @@ class InAppPurchasesControllerTest extends TestCase
      */
     private function createController(array $purchases = []): InAppPurchasesController
     {
-        return new InAppPurchasesController(StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures($purchases));
+        $app = new AppEntity();
+        $app->setId(Uuid::randomHex());
+        $app->setName('test-extension');
+        /** @var StaticEntityRepository<AppCollection> $repository */
+        $repository = new StaticEntityRepository([new AppCollection([$app])]);
+
+        return new InAppPurchasesController(
+            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures($purchases),
+            $repository,
+        );
     }
 }

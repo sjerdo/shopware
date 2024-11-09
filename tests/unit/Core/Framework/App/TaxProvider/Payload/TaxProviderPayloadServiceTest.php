@@ -110,6 +110,7 @@ class TaxProviderPayloadServiceTest extends TestCase
         $payload = new TaxProviderPayload($cart, $salesChannelContext);
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.5-dev');
         $app->setAppSecret('very-secret');

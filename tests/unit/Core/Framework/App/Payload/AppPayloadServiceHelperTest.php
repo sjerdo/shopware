@@ -41,9 +41,9 @@ class AppPayloadServiceHelperTest extends TestCase
     public function testBuildSource(): void
     {
         $inAppPurchase = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures([
-            'purchase-1' => $this->ids->get('app'),
-            'purchase-2' => $this->ids->get('app'),
-            'purchase-3' => $this->ids->get('another-app'),
+            'purchase-1' => 'TestApp',
+            'purchase-2' => 'TestApp',
+            'purchase-3' => 'AnotherApp',
         ]);
 
         $shopIdProvider = $this->createMock(ShopIdProvider::class);
@@ -60,6 +60,7 @@ class AppPayloadServiceHelperTest extends TestCase
         );
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('1.0.0');
 
@@ -125,6 +126,7 @@ class AppPayloadServiceHelperTest extends TestCase
         );
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('1.0.0');
         $app->setAppSecret('top-secret');
@@ -165,6 +167,7 @@ class AppPayloadServiceHelperTest extends TestCase
         );
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('1.0.0');
         $app->setAppSecret('top-secret');
@@ -207,6 +210,7 @@ class AppPayloadServiceHelperTest extends TestCase
         );
 
         $app = new AppEntity();
+        $app->setName('TestApp');
         $app->setId($this->ids->get('app'));
         $app->setVersion('1.0.0');
         $app->setName('TestApp');

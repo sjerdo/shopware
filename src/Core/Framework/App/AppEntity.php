@@ -18,7 +18,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCustomFieldsTrait;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Script\ScriptCollection;
-use Shopware\Core\Framework\Store\InAppPurchase\InAppPurchaseCollection;
 use Shopware\Core\Framework\Webhook\WebhookCollection;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetCollection;
 use Shopware\Core\System\Integration\IntegrationEntity;
@@ -33,13 +32,6 @@ class AppEntity extends Entity
 {
     use EntityCustomFieldsTrait;
     use EntityIdTrait;
-
-    /**
-     * @var string
-     *
-     * @deprecated tag:v6.7.0 - Will be natively typed
-     */
-    protected $id;
 
     /**
      * @var string
@@ -304,8 +296,6 @@ class AppEntity extends Entity
      */
     protected $templateLoadPriority;
 
-    protected ?InAppPurchaseCollection $inAppPurchases = null;
-
     protected string $sourceType = 'local';
 
     /**
@@ -314,16 +304,6 @@ class AppEntity extends Entity
     protected array $sourceConfig = [];
 
     protected bool $selfManaged = false;
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
 
     public function getName(): string
     {
@@ -815,16 +795,6 @@ class AppEntity extends Entity
     public function setTemplateLoadPriority(int $templateLoadPriority): void
     {
         $this->templateLoadPriority = $templateLoadPriority;
-    }
-
-    public function getInAppPurchases(): ?InAppPurchaseCollection
-    {
-        return $this->inAppPurchases;
-    }
-
-    public function setInAppPurchases(InAppPurchaseCollection $inAppPurchases): void
-    {
-        $this->inAppPurchases = $inAppPurchases;
     }
 
     public function getSourceType(): string

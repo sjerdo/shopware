@@ -78,7 +78,7 @@ class AppJWTGenerateRouteTest extends TestCase
 
         $context = Generator::createSalesChannelContext();
 
-        $response = $appJWTGenerateRoute->generate('test', $context);
+        $response = $appJWTGenerateRoute->generate('extension-1', $context);
         $data = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('token', $data);

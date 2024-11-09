@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\Authentication\LocaleProvider;
 use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @internal
@@ -42,8 +43,9 @@ class QuerySignerTest extends TestCase
             ->willReturn('shopId');
 
         $app = new AppEntity();
+        $app->setName('extension-1');
         $app->setAppSecret('devSecret');
-        $app->setId('extension-1');
+        $app->setId(Uuid::randomHex());
 
         $querySigner = new QuerySigner('http://shop.url', '1.0.0', $localeProvider, $shopIdProvider, $inAppPurchase);
         $signedQuery = $querySigner->signUri('http://app.url/?foo=bar', $app, $context);

@@ -51,11 +51,11 @@ final class InAppPurchase implements ResetInterface
     /**
      * @return list<string>
      */
-    public function getByExtension(string $extensionId): array
+    public function getByExtension(string $extensionName): array
     {
         $this->ensureRegistration();
 
-        return $this->extensionPurchases[$extensionId] ?? [];
+        return $this->extensionPurchases[$extensionName] ?? [];
     }
 
     public function reset(): void

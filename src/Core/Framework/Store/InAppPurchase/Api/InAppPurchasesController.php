@@ -3,7 +3,10 @@
 namespace Shopware\Core\Framework\Store\InAppPurchase\Api;
 
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\App\AppCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Store\StoreException;
@@ -19,8 +22,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Package('checkout')]
 class InAppPurchasesController extends AbstractController
 {
-    public function __construct(private readonly InAppPurchase $inAppPurchase)
-    {
+    /**
+     * @param EntityRepository<AppCollection> $appRepository
+     */
+    public function __construct(
+        private readonly InAppPurchase $inAppPurchase,
+        private readonly EntityRepository $appRepository,
+    ) {
     }
 
     #[Route(path: '/api/store/active-in-app-purchases', name: 'api.store.active-in-app-purchases', methods: ['GET'])]
@@ -37,9 +45,13 @@ class InAppPurchasesController extends AbstractController
         }
 
         $appId = $source->getIntegrationId();
+        $app = $this->appRepository->search(new Criteria([$appId]), $context)->getEntities()->first();
+        if (!$app) {
+            throw StoreException::extensionNotFoundFromId($appId);
+        }
 
         return new JsonResponse(
-            ['inAppPurchases' => $this->inAppPurchase->getByExtension($appId)]
+            ['inAppPurchases' => $this->inAppPurchase->getByExtension($app->getName())]
         );
     }
 

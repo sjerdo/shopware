@@ -29,7 +29,6 @@ final class InAppPurchaseSyncHandler extends ScheduledTaskHandler
     public function run(): void
     {
         $context = Context::createCLIContext();
-        $this->iapSyncService->disableExpiredInAppPurchases();
         $this->iapSyncService->updateActiveInAppPurchases($context);
     }
 }

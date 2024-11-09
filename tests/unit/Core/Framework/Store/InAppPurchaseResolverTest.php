@@ -2,13 +2,12 @@
 
 namespace Shopware\Tests\Unit\Core\Framework\Store;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ConnectionException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Store\InAppPurchaseResolver;
+use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 
 /**
  * @internal
@@ -17,19 +16,14 @@ use Shopware\Core\Framework\Store\InAppPurchaseResolver;
 #[Package('checkout')]
 class InAppPurchaseResolverTest extends TestCase
 {
-    public function testCompilerPass(): void
+    public function testActivePurchases(): void
     {
-        $connection = $this->createMock(Connection::class);
-        $connection
-            ->expects(static::once())
-            ->method('fetchAllKeyValue')
-            ->willReturn([
-                'active-feature-1' => 'extension-1',
-                'active-feature-2' => 'extension-1',
-                'active-feature-3' => 'extension-2',
-            ]);
-
-        $iap = new InAppPurchase(new InAppPurchaseResolver($connection));
+        $config = new StaticSystemConfigService(['core.store.iapKey' => $this->formatConfigKey([
+            'active-feature-1' => 'extension-1',
+            'active-feature-2' => 'extension-1',
+            'active-feature-3' => 'extension-2',
+        ])]);
+        $iap = new InAppPurchase(new InAppPurchaseResolver($config));
 
         static::assertTrue($iap->isActive('active-feature-1'));
         static::assertTrue($iap->isActive('active-feature-2'));
@@ -42,16 +36,58 @@ class InAppPurchaseResolverTest extends TestCase
         static::assertSame([], $iap->getByExtension('extension-3'));
     }
 
-    public function testConnectionError(): void
+    public function testInactivePurchase(): void
     {
-        $connection = $this->createMock(Connection::class);
-        $connection
-            ->expects(static::once())
-            ->method('fetchAllKeyValue')
-            ->willThrowException(new ConnectionException());
+        $config = new StaticSystemConfigService(['core.store.iapKey' => $this->formatConfigKey([
+            'inactive-feature' => 'extension',
+        ], false)]);
+        $iap = new InAppPurchase(new InAppPurchaseResolver($config));
 
-        $iap = new InAppPurchase(new InAppPurchaseResolver($connection));
+        static::assertFalse($iap->isActive('inactive-feature'));
+        static::assertSame([], $iap->all());
+        static::assertSame([], $iap->getByExtension('extension'));
+    }
+
+    public function testExpiredPurchase(): void
+    {
+        $config = new StaticSystemConfigService(['core.store.iapKey' => $this->formatConfigKey([
+            'expired-feature' => 'extension',
+        ], true, '2000-01-01')]);
+        $iap = new InAppPurchase(new InAppPurchaseResolver($config));
+
+        static::assertFalse($iap->isActive('expired-feature'));
+        static::assertSame([], $iap->all());
+        static::assertSame([], $iap->getByExtension('extension'));
+    }
+
+    public function testEmptySystemConfig(): void
+    {
+        $iap = new InAppPurchase(new InAppPurchaseResolver(new StaticSystemConfigService()));
 
         static::assertEmpty($iap->all());
+    }
+
+    public function testInvalidSystemConfig(): void
+    {
+        $iap = new InAppPurchase(new InAppPurchaseResolver(new StaticSystemConfigService(['core.store.iapKey' => 'not a json'])));
+
+        static::assertEmpty($iap->all());
+    }
+
+    /**
+     * @param array<string, string> $purchases
+     */
+    private function formatConfigKey(array $purchases, bool $active = true, string $expiresAt = '2099-01-01'): string
+    {
+        $formattedActivePurchases = [];
+        foreach ($purchases as $identifier => $extensionName) {
+            $formattedActivePurchases[] = [
+                'identifier' => $extensionName . '_' . $identifier,
+                'active' => $active,
+                'expiresAt' => $expiresAt,
+            ];
+        }
+
+        return \json_encode($formattedActivePurchases) ?: '';
     }
 }
