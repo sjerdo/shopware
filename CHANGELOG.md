@@ -1,6 +1,10 @@
 # Changelog
 This is the official changelog index of Shopware 6. Here you find a registry of all Shopware 6 releases with a reference to the detailed changelog of each version. If you want to know more about how the changelog is created have a look [here](/adr/workflow/2020-08-03-implement-New-Changelog.md).
 
+## 6.6.8.2
+*  [#5400 - Do not use deprecated method in Twig rendering which can lead to a memory limit overflow](./changelog/release-6-6-8-2/2024-11-06-do-not-use-deprecated-method-in-twig-rendering-which-can-lead-to-a-memory-limit-overflow.md) ([Max](https://github.com/aragon999))
+*  [NEXT-39439 - Fixed exception when shopware.cart_redis_url configuration parameter is set](./changelog/release-6-6-8-2/2024-11-06-fixed-exception-when-shopware-cart_redis_url-configuration-parameter-is-set.md)
+
 ## 6.6.8.1
 *  [NEXT-39321 - Fix cookie issue and follow redirect in HOT reload](./changelog/release-6-6-8-1/2024-10-29-fix-cookie-issue-and-follow-redirect-in-hot-reload.md)
 
