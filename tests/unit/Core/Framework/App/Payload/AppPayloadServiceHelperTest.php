@@ -40,7 +40,7 @@ class AppPayloadServiceHelperTest extends TestCase
 
     public function testBuildSource(): void
     {
-        $inAppPurchase = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures([
+        $inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures([
             'purchase-1' => 'TestApp',
             'purchase-2' => 'TestApp',
             'purchase-3' => 'AnotherApp',
@@ -98,7 +98,7 @@ class AppPayloadServiceHelperTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $this->createMock(ShopIdProvider::class),
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://shopware.com'
         );
 
@@ -121,7 +121,7 @@ class AppPayloadServiceHelperTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://shopware.com'
         );
 
@@ -162,7 +162,7 @@ class AppPayloadServiceHelperTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://shopware.com'
         );
 
@@ -205,7 +205,7 @@ class AppPayloadServiceHelperTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://shopware.com'
         );
 

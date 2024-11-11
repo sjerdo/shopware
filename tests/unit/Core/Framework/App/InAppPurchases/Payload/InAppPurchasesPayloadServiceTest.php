@@ -207,7 +207,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             $definitionInstanceRegistry,
             $this->createMock(JsonEntityEncoder::class),
             $shopIdProvider,
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://test-shop.com'
         );
 

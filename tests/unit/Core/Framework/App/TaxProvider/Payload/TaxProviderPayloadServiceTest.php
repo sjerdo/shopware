@@ -64,7 +64,7 @@ class TaxProviderPayloadServiceTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://test-shop.com',
         );
 
@@ -206,7 +206,7 @@ class TaxProviderPayloadServiceTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $shopIdProvider,
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://test-shop.com'
         );
 

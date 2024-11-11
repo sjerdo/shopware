@@ -150,7 +150,7 @@ class InAppPurchasesControllerTest extends TestCase
         $repository = new StaticEntityRepository([new AppCollection([$app])]);
 
         return new InAppPurchasesController(
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures($purchases),
+            StaticInAppPurchaseFactory::createWithFeatures($purchases),
             $repository,
         );
     }

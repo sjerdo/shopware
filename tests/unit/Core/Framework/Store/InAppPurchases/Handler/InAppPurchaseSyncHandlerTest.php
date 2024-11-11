@@ -8,19 +8,19 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Store\InAppPurchase\Handler\InAppPurchaseSyncHandler;
-use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchasesSyncService;
+use Shopware\Core\Framework\Store\InAppPurchase\Handler\InAppPurchaseUpdateHandler;
+use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseUpdater;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(InAppPurchaseSyncHandler::class)]
+#[CoversClass(InAppPurchaseUpdateHandler::class)]
 class InAppPurchaseSyncHandlerTest extends TestCase
 {
     public function testRunWithActiveInAppPurchases(): void
     {
-        $syncService = $this->createMock(InAppPurchasesSyncService::class);
+        $syncService = $this->createMock(InAppPurchaseUpdater::class);
         $syncService->expects(static::once())
             ->method('updateActiveInAppPurchases')
             ->with(Context::createCLIContext());
@@ -29,7 +29,7 @@ class InAppPurchaseSyncHandlerTest extends TestCase
         $logger->expects(static::never())
             ->method('error');
 
-        $handler = new InAppPurchaseSyncHandler(
+        $handler = new InAppPurchaseUpdateHandler(
             $this->createMock(EntityRepository::class),
             $logger,
             $syncService

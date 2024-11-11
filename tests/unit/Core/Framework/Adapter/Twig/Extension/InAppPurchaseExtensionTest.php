@@ -16,7 +16,7 @@ class InAppPurchaseExtensionTest extends TestCase
 {
     public function testGetFunctions(): void
     {
-        $functions = (new InAppPurchaseExtension(StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures()))->getFunctions();
+        $functions = (new InAppPurchaseExtension(StaticInAppPurchaseFactory::createWithFeatures()))->getFunctions();
 
         static::assertCount(2, $functions);
         static::assertInstanceOf(TwigFunction::class, $functions[0]);
@@ -27,7 +27,7 @@ class InAppPurchaseExtensionTest extends TestCase
 
     public function testIsActive(): void
     {
-        $extension = new InAppPurchaseExtension(StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['app' => 'test']));
+        $extension = new InAppPurchaseExtension(StaticInAppPurchaseFactory::createWithFeatures(['app' => 'test']));
 
         static::assertTrue($extension->isActive('app'));
         static::assertFalse($extension->isActive('nonexistent'));
@@ -35,7 +35,7 @@ class InAppPurchaseExtensionTest extends TestCase
 
     public function testAll(): void
     {
-        $extension = new InAppPurchaseExtension(StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['app' => 'test', 'anotherapp' => 'test2']));
+        $extension = new InAppPurchaseExtension(StaticInAppPurchaseFactory::createWithFeatures(['app' => 'test', 'anotherapp' => 'test2']));
 
         static::assertEquals(['app', 'anotherapp'], $extension->all());
     }

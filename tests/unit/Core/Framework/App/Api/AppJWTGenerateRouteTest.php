@@ -22,7 +22,7 @@ class AppJWTGenerateRouteTest extends TestCase
         $appJWTGenerateRoute = new AppJWTGenerateRoute(
             $this->createMock(Connection::class),
             $this->createMock(ShopIdProvider::class),
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
         );
 
         $context = Generator::createSalesChannelContext();
@@ -38,7 +38,7 @@ class AppJWTGenerateRouteTest extends TestCase
         $appJWTGenerateRoute = new AppJWTGenerateRoute(
             $this->createMock(Connection::class),
             $this->createMock(ShopIdProvider::class),
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
         );
 
         $context = Generator::createSalesChannelContext();
@@ -50,7 +50,7 @@ class AppJWTGenerateRouteTest extends TestCase
 
     public function testGenerate(): void
     {
-        $inAppPurchase = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures([
+        $inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures([
             'active-license-1' => 'extension-1',
             'active-license-2' => 'extension-1',
             'active-license-3' => 'extension-2',

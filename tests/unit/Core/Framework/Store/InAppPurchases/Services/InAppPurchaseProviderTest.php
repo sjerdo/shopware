@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Shopware\Tests\Unit\Core\Framework\Store;
+namespace Shopware\Tests\Unit\Core\Framework\Store\InAppPurchases\Services;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
-use Shopware\Core\Framework\Store\InAppPurchaseResolver;
+use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseProvider;
 use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 
 /**
  * @internal
  */
-#[CoversClass(InAppPurchaseResolver::class)]
+#[CoversClass(InAppPurchaseProvider::class)]
 #[Package('checkout')]
-class InAppPurchaseResolverTest extends TestCase
+class InAppPurchaseProviderTest extends TestCase
 {
     public function testActivePurchases(): void
     {
@@ -23,7 +23,7 @@ class InAppPurchaseResolverTest extends TestCase
             'active-feature-2' => 'extension-1',
             'active-feature-3' => 'extension-2',
         ])]);
-        $iap = new InAppPurchase(new InAppPurchaseResolver($config));
+        $iap = new InAppPurchase(new InAppPurchaseProvider($config));
 
         static::assertTrue($iap->isActive('active-feature-1'));
         static::assertTrue($iap->isActive('active-feature-2'));
@@ -41,7 +41,7 @@ class InAppPurchaseResolverTest extends TestCase
         $config = new StaticSystemConfigService(['core.store.iapKey' => $this->formatConfigKey([
             'inactive-feature' => 'extension',
         ], false)]);
-        $iap = new InAppPurchase(new InAppPurchaseResolver($config));
+        $iap = new InAppPurchase(new InAppPurchaseProvider($config));
 
         static::assertFalse($iap->isActive('inactive-feature'));
         static::assertSame([], $iap->all());
@@ -53,7 +53,7 @@ class InAppPurchaseResolverTest extends TestCase
         $config = new StaticSystemConfigService(['core.store.iapKey' => $this->formatConfigKey([
             'expired-feature' => 'extension',
         ], true, '2000-01-01')]);
-        $iap = new InAppPurchase(new InAppPurchaseResolver($config));
+        $iap = new InAppPurchase(new InAppPurchaseProvider($config));
 
         static::assertFalse($iap->isActive('expired-feature'));
         static::assertSame([], $iap->all());
@@ -62,14 +62,14 @@ class InAppPurchaseResolverTest extends TestCase
 
     public function testEmptySystemConfig(): void
     {
-        $iap = new InAppPurchase(new InAppPurchaseResolver(new StaticSystemConfigService()));
+        $iap = new InAppPurchase(new InAppPurchaseProvider(new StaticSystemConfigService()));
 
         static::assertEmpty($iap->all());
     }
 
     public function testInvalidSystemConfig(): void
     {
-        $iap = new InAppPurchase(new InAppPurchaseResolver(new StaticSystemConfigService(['core.store.iapKey' => 'not a json'])));
+        $iap = new InAppPurchase(new InAppPurchaseProvider(new StaticSystemConfigService(['core.store.iapKey' => 'not a json'])));
 
         static::assertEmpty($iap->all());
     }

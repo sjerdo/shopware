@@ -25,7 +25,7 @@ class QuerySignerTest extends TestCase
 {
     public function testSignUri(): void
     {
-        $inAppPurchase = StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(['purchase-1' => 'extension-1', 'purchase-2' => 'extension-1', 'purchase-3' => 'extension-2']);
+        $inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures(['purchase-1' => 'extension-1', 'purchase-2' => 'extension-1', 'purchase-3' => 'extension-2']);
 
         $context = new Context(new AdminApiSource(null));
 
@@ -81,7 +81,7 @@ class QuerySignerTest extends TestCase
             '1.0.0',
             $this->createMock(LocaleProvider::class),
             $this->createMock(ShopIdProvider::class),
-            StaticInAppPurchaseFactory::createInAppPurchaseWithFeatures(),
+            StaticInAppPurchaseFactory::createWithFeatures(),
         );
 
         $this->expectException(AppException::class);

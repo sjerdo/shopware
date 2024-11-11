@@ -1,27 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Shopware\Core\Framework\Store;
+namespace Shopware\Core\Framework\Store\InAppPurchase\Services;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
-final class InAppPurchaseResolver
+final class InAppPurchaseProvider
 {
     public const CONFIG_STORE_IAP_KEY = 'core.store.iapKey';
 
-    /**
-     * @internal
-     */
     public function __construct(
-        private readonly SystemConfigService $systemConfigService
+        private readonly SystemConfigService $systemConfigService,
     ) {
     }
 
     /**
      * @return array<string, string>
      */
-    public function fetchActiveInAppPurchases(): array
+    public function getActive(): array
     {
         $purchases = $this->systemConfigService->getString(self::CONFIG_STORE_IAP_KEY);
         if (!$purchases) {
@@ -33,7 +33,7 @@ final class InAppPurchaseResolver
             return [];
         }
 
-        return iterator_to_array($this->formatActivePurchases($purchases));
+        return iterator_to_array($this->formatAndFilterActive($purchases));
     }
 
     /**
@@ -41,7 +41,7 @@ final class InAppPurchaseResolver
      *
      * @return iterable<string, string>
      */
-    private function formatActivePurchases(array $purchases): iterable
+    private function formatAndFilterActive(array $purchases): iterable
     {
         foreach ($purchases as $purchase) {
             if (!$purchase['active']) {

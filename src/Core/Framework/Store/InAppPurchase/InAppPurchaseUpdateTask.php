@@ -5,12 +5,15 @@ namespace Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
-class InAppPurchaseSyncTask extends ScheduledTask
+final class InAppPurchaseUpdateTask extends ScheduledTask
 {
     public static function getTaskName(): string
     {
-        return 'in-app-purchase.fetch.active';
+        return 'in-app-purchase.update';
     }
 
     public static function getDefaultInterval(): int

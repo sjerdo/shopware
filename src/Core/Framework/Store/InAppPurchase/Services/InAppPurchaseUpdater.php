@@ -6,14 +6,13 @@ use GuzzleHttp\ClientInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\Authentication\AbstractStoreRequestOptionsProvider;
-use Shopware\Core\Framework\Store\InAppPurchaseResolver;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-class InAppPurchasesSyncService
+class InAppPurchaseUpdater
 {
     public function __construct(
         private readonly ClientInterface $client,
@@ -27,7 +26,7 @@ class InAppPurchasesSyncService
     {
         $activeIaps = $this->fetchActiveInAppPurchasesFromSBP($context);
 
-        $this->systemConfigService->set(InAppPurchaseResolver::CONFIG_STORE_IAP_KEY, $activeIaps);
+        $this->systemConfigService->set(InAppPurchaseProvider::CONFIG_STORE_IAP_KEY, $activeIaps);
     }
 
     private function fetchActiveInAppPurchasesFromSBP(Context $context): string

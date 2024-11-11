@@ -7,21 +7,21 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Shopware\Core\Framework\Store\InAppPurchase\InAppPurchaseSyncTask;
-use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchasesSyncService;
+use Shopware\Core\Framework\Store\InAppPurchase\InAppPurchaseUpdateTask;
+use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseUpdater;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- *  @internal
+ * @internal
  */
-#[AsMessageHandler(handles: InAppPurchaseSyncTask::class)]
+#[AsMessageHandler(handles: InAppPurchaseUpdateTask::class)]
 #[Package('checkout')]
-final class InAppPurchaseSyncHandler extends ScheduledTaskHandler
+final class InAppPurchaseUpdateHandler extends ScheduledTaskHandler
 {
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         LoggerInterface $logger,
-        private readonly InAppPurchasesSyncService $iapSyncService
+        private readonly InAppPurchaseUpdater $iapUpdater
     ) {
         parent::__construct($scheduledTaskRepository, $logger);
     }
@@ -29,6 +29,6 @@ final class InAppPurchaseSyncHandler extends ScheduledTaskHandler
     public function run(): void
     {
         $context = Context::createCLIContext();
-        $this->iapSyncService->updateActiveInAppPurchases($context);
+        $this->iapUpdater->updateActiveInAppPurchases($context);
     }
 }

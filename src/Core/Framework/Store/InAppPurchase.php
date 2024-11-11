@@ -2,9 +2,9 @@
 
 namespace Shopware\Core\Framework\Store;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseProvider;
 use Symfony\Contracts\Service\ResetInterface;
 
 #[Package('checkout')]
@@ -24,7 +24,7 @@ final class InAppPurchase implements ResetInterface
      * @internal
      */
     public function __construct(
-        private readonly InAppPurchaseResolver $inAppPurchaseFetcher
+        private readonly InAppPurchaseProvider $inAppPurchaseProvider
     ) {
     }
 
@@ -77,18 +77,12 @@ final class InAppPurchase implements ResetInterface
             return;
         }
 
-        try {
-            $inAppPurchases = $this->inAppPurchaseFetcher->fetchActiveInAppPurchases();
-            $this->activePurchases = $inAppPurchases;
+        $inAppPurchases = $this->inAppPurchaseProvider->getActive();
+        $this->activePurchases = $inAppPurchases;
 
-            // group by extension id, which is the value of the array
-            $this->extensionPurchases = [];
-
-            foreach ($inAppPurchases as $identifier => $extensionId) {
-                $this->extensionPurchases[$extensionId][] = $identifier;
-            }
-        } catch (Exception) {
-            // we don't have a database connection, so we can't fetch the active in-app purchases
+        $this->extensionPurchases = [];
+        foreach ($inAppPurchases as $identifier => $extensionId) {
+            $this->extensionPurchases[$extensionId][] = $identifier;
         }
     }
 }

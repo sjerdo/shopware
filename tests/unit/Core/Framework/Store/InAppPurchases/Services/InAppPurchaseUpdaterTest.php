@@ -9,15 +9,15 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\Authentication\AbstractStoreRequestOptionsProvider;
-use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchasesSyncService;
+use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseUpdater;
 use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(InAppPurchasesSyncService::class)]
-class InAppPurchasesSyncServiceTest extends TestCase
+#[CoversClass(InAppPurchaseUpdater::class)]
+class InAppPurchaseUpdaterTest extends TestCase
 {
     public function testUpdateActiveInAppPurchases(): void
     {
@@ -37,7 +37,7 @@ class InAppPurchasesSyncServiceTest extends TestCase
             ->method('getAuthenticationHeader')
             ->willReturn(['b']);
 
-        $service = new InAppPurchasesSyncService(
+        $service = new InAppPurchaseUpdater(
             $client,
             $systemConfig,
             'https://test.com',

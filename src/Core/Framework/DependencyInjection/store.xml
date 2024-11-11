@@ -235,10 +235,10 @@
         </service>
 
         <service id="Shopware\Core\Framework\Store\InAppPurchase" public="true">
-            <argument type="service" id="Shopware\Core\Framework\Store\InAppPurchaseResolver"/>
+            <argument type="service" id="Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseProvider"/>
         </service>
 
-        <service id="Shopware\Core\Framework\Store\InAppPurchaseResolver">
+        <service id="Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseProvider">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
@@ -250,19 +250,23 @@
             </call>
         </service>
 
-        <service id="Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchasesSyncService" public="true">
+        <service id="Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseUpdater" public="true">
             <argument type="service" id="shopware.store_client"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="string">%in_app_purchases.active_purchases%</argument>
             <argument type="service" id="Shopware\Core\Framework\Store\Authentication\StoreRequestOptionsProvider"/>
         </service>
 
-        <service id="Shopware\Core\Framework\Store\InAppPurchase\Handler\InAppPurchaseSyncHandler">
+        <service id="Shopware\Core\Framework\Store\InAppPurchase\Handler\InAppPurchaseUpdateHandler">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger"/>
-            <argument type="service" id="Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchasesSyncService"/>
+            <argument type="service" id="Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseUpdater"/>
 
             <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="Shopware\Core\Framework\Store\InAppPurchase\InAppPurchaseUpdateTask">
+            <tag name="shopware.scheduled.task" />
         </service>
 
         <service id="Shopware\Core\Framework\App\InAppPurchases\Payload\InAppPurchasesPayloadService">

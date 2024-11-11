@@ -4,7 +4,7 @@ namespace Shopware\Core\Framework\Test\Store;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase;
-use Shopware\Core\Framework\Store\InAppPurchaseResolver;
+use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseProvider;
 use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 
 /**
@@ -16,9 +16,9 @@ class StaticInAppPurchaseFactory
     /**
      * @param array<string,string> $activePurchases ['featureIdentifier' => 'extensionName']
      */
-    public static function createInAppPurchaseWithFeatures(array $activePurchases = []): InAppPurchase
+    public static function createWithFeatures(array $activePurchases = []): InAppPurchase
     {
-        $inAppPurchase = new InAppPurchase(new InAppPurchaseResolver(new StaticSystemConfigService()));
+        $inAppPurchase = new InAppPurchase(new InAppPurchaseProvider(new StaticSystemConfigService()));
 
         // group by extension name, which is the value of the array
         $extensionPurchases = [];
