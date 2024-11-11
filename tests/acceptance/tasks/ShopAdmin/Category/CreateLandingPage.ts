@@ -14,7 +14,7 @@ export const CreateLandingPage = base.extend<{ CreateLandingPage: Task }, Fixtur
 
                 //Fill details and save
                 await AdminLandingPageCreate.nameInput.fill(landingPageData.name);
-                await AdminLandingPageCreate.landingPageStatus.setChecked(status);
+                await AdminLandingPageCreate.landingPageStatus.setChecked(landingPageData.status);
                 await AdminLandingPageCreate.salesChannelSelectionList.click();
                 await AdminLandingPageCreate.filtersResultPopoverItemList.filter({ hasText: landingPageData.salesChannel }).click();
                 await AdminLandingPageCreate.seoUrlInput.fill(landingPageData.seoUrl);
@@ -30,9 +30,9 @@ export const CreateLandingPage = base.extend<{ CreateLandingPage: Task }, Fixtur
                     await AdminLandingPageCreate.searchLayoutInput.dblclick();
                     // Search input need to delay press more than 300ms to mimic user typing in order to activate search action
                     await AdminLandingPageCreate.searchLayoutInput.pressSequentially(layoutName.split(' ')[1].substring(0,5), {delay: 500});
-                    await AdminLandingPageCreate.layoutItems.first().waitFor({ state: 'visible' });
-                    await AdminLandingPageCreate.layoutItems.first().click();
-                    await AdminLandingPageCreate.layoutSaveButton.click();
+                    await AdminLandingPageCreate.layoutCheckboxes.first().waitFor({ state: 'visible' });
+                    await AdminLandingPageCreate.layoutCheckboxes.first().click();
+                    await AdminLandingPageCreate.layoutAddButton.click();
                 }
                 await AdminLandingPageCreate.saveLandingPageButton.click();
                 await AdminLandingPageCreate.loadingSpinner.waitFor({ state: 'hidden' });
