@@ -8,7 +8,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Api\Serializer\JsonEntityEncoder;
 use Shopware\Core\Framework\App\AppEntity;
 use Shopware\Core\Framework\App\Exception\AppRegistrationException;
@@ -20,10 +19,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Log\ExceptionLogger;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Serializer\StructNormalizer;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * @internal
@@ -41,25 +37,27 @@ class InAppPurchasesPayloadServiceTest extends TestCase
 
     public function testRequest(): void
     {
-        $definitionInstanceRegistry = $this->createMock(DefinitionInstanceRegistry::class);
-
         $shopIdProvider = $this->createMock(ShopIdProvider::class);
         $shopIdProvider
             ->method('getShopId')
             ->willReturn($this->ids->get('shop-id'));
 
-        $entityEncoder = new JsonEntityEncoder(
-            new Serializer([new StructNormalizer()], [new JsonEncoder()])
-        );
+        $appPayloadServiceHelper = $this->createMock(AppPayloadServiceHelper::class);
+        $appPayloadServiceHelper->expects(static::once())
+            ->method('createRequestOptions')
+            ->willReturn([
+                'app_request_context' => Context::createDefaultContext(),
+                'request_type' => [
+                    'app_secret' => 'very-secret',
+                    'validated_response' => true,
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => '{"purchases":["purchase-1","purchase-2"]}',
+            ]);
 
-        $appPayloadServiceHelper = new AppPayloadServiceHelper(
-            $definitionInstanceRegistry,
-            $entityEncoder,
-            $shopIdProvider,
-            'https://test-shop.com'
-        );
-
-        $context = new Context(new SystemSource());
+        $context = Context::createDefaultContext();
         $responseContent = \json_encode([
             'purchases' => [
                 'purchase-1',
@@ -75,18 +73,18 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             $this->createMock(ExceptionLogger::class),
         );
 
-        $payload = new InAppPurchasesPayload([
-            'purchase-1',
-            'purchase-2',
-        ]);
+        $url = 'https://example.com/filter-mah-features';
 
         $app = new AppEntity();
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.6-dev');
         $app->setAppSecret('very-secret');
-        $app->setInAppPurchasesGatewayUrl('https://example.com/filter-mah-features');
+        $app->setInAppPurchasesGatewayUrl($url);
+
+        $payload = new InAppPurchasesPayload(['purchase-1', 'purchase-2']);
 
         $filterResponse = $filterPayloadService->request(
+            'https://example.com/filter-mah-features',
             $payload,
             $app,
             $context
@@ -100,25 +98,27 @@ class InAppPurchasesPayloadServiceTest extends TestCase
 
     public function testRequestReceiveFilteredResponse(): void
     {
-        $definitionInstanceRegistry = $this->createMock(DefinitionInstanceRegistry::class);
-
         $shopIdProvider = $this->createMock(ShopIdProvider::class);
         $shopIdProvider
             ->method('getShopId')
             ->willReturn($this->ids->get('shop-id'));
 
-        $entityEncoder = new JsonEntityEncoder(
-            new Serializer([new StructNormalizer()], [new JsonEncoder()])
-        );
+        $appPayloadServiceHelper = $this->createMock(AppPayloadServiceHelper::class);
+        $appPayloadServiceHelper->expects(static::once())
+            ->method('createRequestOptions')
+            ->willReturn([
+                'app_request_context' => Context::createDefaultContext(),
+                'request_type' => [
+                    'app_secret' => 'very-secret',
+                    'validated_response' => true,
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => '{"purchases":["purchase-1","purchase-2"]}',
+            ]);
 
-        $appPayloadServiceHelper = new AppPayloadServiceHelper(
-            $definitionInstanceRegistry,
-            $entityEncoder,
-            $shopIdProvider,
-            'https://test-shop.com'
-        );
-
-        $context = new Context(new SystemSource());
+        $context = Context::createDefaultContext();
         $responseContent = \json_encode([
             'purchases' => [
                 'purchase-2',
@@ -133,18 +133,18 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             $this->createMock(ExceptionLogger::class),
         );
 
-        $payload = new InAppPurchasesPayload([
-            'purchase-1',
-            'purchase-2',
-        ]);
+        $url = 'https://example.com/filter-mah-features';
 
         $app = new AppEntity();
         $app->setId($this->ids->get('app'));
         $app->setVersion('6.6-dev');
-        $app->setAppSecret('top-secret');
-        $app->setInAppPurchasesGatewayUrl('https://example.com/filter-mah-features');
+        $app->setAppSecret('very-secret');
+        $app->setInAppPurchasesGatewayUrl($url);
+
+        $payload = new InAppPurchasesPayload(['purchase-1', 'purchase-2']);
 
         $filterResponse = $filterPayloadService->request(
+            'https://example.com/filter-mah-features',
             $payload,
             $app,
             $context
@@ -166,24 +166,27 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             },
         ]);
 
-        $payload = $this->createMock(InAppPurchasesPayload::class);
-
-        $app = new AppEntity();
-        $app->setId($this->ids->get('app'));
-        $app->setVersion('6.6-dev');
-        $app->setAppSecret('top-secret');
-        $app->setInAppPurchasesGatewayUrl('https://example.com/filter-mah-features');
-
         $filterPayloadService = new InAppPurchasesPayloadService(
             $this->createMock(AppPayloadServiceHelper::class),
             $client,
             $this->createMock(ExceptionLogger::class),
         );
 
+        $url = 'https://example.com/filter-mah-features';
+
+        $app = new AppEntity();
+        $app->setId($this->ids->get('app'));
+        $app->setVersion('6.6-dev');
+        $app->setAppSecret('very-secret');
+        $app->setInAppPurchasesGatewayUrl($url);
+
+        $payload = $this->createMock(InAppPurchasesPayload::class);
+
         $filterPayloadService->request(
+            'https://example.com/filter-mah-features',
             $payload,
             $app,
-            new Context(new SystemSource())
+            Context::createDefaultContext()
         );
     }
 
@@ -196,18 +199,12 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             ->method('getShopId')
             ->willReturn($this->ids->get('shop-id'));
 
-        $entityEncoder = new JsonEntityEncoder(
-            new Serializer([new StructNormalizer()], [new JsonEncoder()])
-        );
-
         $appPayloadServiceHelper = new AppPayloadServiceHelper(
             $definitionInstanceRegistry,
-            $entityEncoder,
+            $this->createMock(JsonEntityEncoder::class),
             $shopIdProvider,
             'https://test-shop.com'
         );
-
-        $context = new Context(new SystemSource());
 
         $app = new AppEntity();
         $app->setId($this->ids->get('app'));
@@ -227,9 +224,10 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $this->expectExceptionMessage('App secret is missing');
 
         $filterPayloadService->request(
+            'https://example.com/filter-mah-features',
             $payload,
             $app,
-            $context
+            Context::createDefaultContext()
         );
     }
 }
