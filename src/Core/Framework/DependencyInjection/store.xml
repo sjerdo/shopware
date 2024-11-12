@@ -263,5 +263,16 @@
 
             <tag name="messenger.message_handler"/>
         </service>
+
+        <service id="Shopware\Core\Framework\App\InAppPurchases\Payload\InAppPurchasesPayloadService">
+            <argument type="service" id="Shopware\Core\Framework\App\Payload\AppPayloadServiceHelper"/>
+            <argument type="service" id="shopware.app_system.guzzle"/>
+            <argument type="service" id="Shopware\Core\Framework\Log\ExceptionLogger"/>
+        </service>
+
+        <service id="Shopware\Core\Framework\App\InAppPurchases\Gateway\InAppPurchasesGateway">
+            <argument type="service" id="Shopware\Core\Framework\App\InAppPurchases\Payload\InAppPurchasesPayloadService"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
     </services>
 </container>

@@ -38,14 +38,6 @@ class InAppPurchasesPayload implements SourcedPayloadInterface
         return $this->purchases;
     }
 
-    /**
-     * @param array<int, string> $purchases
-     */
-    public function setPurchases(array $purchases): void
-    {
-        $this->purchases = $purchases;
-    }
-
     public function setSource(Source $source): void
     {
         $this->source = $source;

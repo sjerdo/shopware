@@ -18,16 +18,20 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class InAppPurchasesGateway
 {
     public function __construct(
-        readonly private AppEntity $app,
-        readonly private Context $context,
         readonly private InAppPurchasesPayloadService $payloadService,
         readonly private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
-    public function process(InAppPurchasesPayload $payload): InAppPurchasesResponse
+    public function process(InAppPurchasesPayload $payload, Context $context, AppEntity $app): ?InAppPurchasesResponse
     {
-        $response = $this->payloadService->request($payload, $this->app, $this->context);
+        $url = $app->getInAppPurchasesGatewayUrl();
+
+        if ($url === null) {
+            return null;
+        }
+
+        $response = $this->payloadService->request($url, $payload, $app, $context);
 
         $this->eventDispatcher->dispatch(new InAppPurchasesGatewayEvent($response));
 
