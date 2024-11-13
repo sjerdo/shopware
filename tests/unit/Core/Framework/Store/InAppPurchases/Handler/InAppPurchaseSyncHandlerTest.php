@@ -22,7 +22,7 @@ class InAppPurchaseSyncHandlerTest extends TestCase
     {
         $syncService = $this->createMock(InAppPurchaseUpdater::class);
         $syncService->expects(static::once())
-            ->method('updateActiveInAppPurchases')
+            ->method('update')
             ->with(Context::createCLIContext());
 
         $logger = $this->createMock(LoggerInterface::class);
