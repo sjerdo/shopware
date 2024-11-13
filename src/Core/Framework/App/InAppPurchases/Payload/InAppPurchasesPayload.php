@@ -18,24 +18,10 @@ class InAppPurchasesPayload implements SourcedPayloadInterface
     private Source $source;
 
     /**
-     * @var array<int, string>
-     */
-    private array $purchases;
-
-    /**
      * @param array<int, string> $purchases
      */
-    public function __construct(array $purchases)
+    public function __construct(public readonly array $purchases)
     {
-        $this->purchases = $purchases;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    public function getPurchases(): array
-    {
-        return $this->purchases;
     }
 
     public function setSource(Source $source): void

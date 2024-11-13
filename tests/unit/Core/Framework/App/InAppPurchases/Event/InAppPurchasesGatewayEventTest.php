@@ -20,6 +20,6 @@ class InAppPurchasesGatewayEventTest extends TestCase
         $response = new InAppPurchasesResponse();
         $event = new InAppPurchasesGatewayEvent($response);
 
-        static::assertSame($response, $event->getResponse());
+        static::assertSame($response, $event->response);
     }
 }

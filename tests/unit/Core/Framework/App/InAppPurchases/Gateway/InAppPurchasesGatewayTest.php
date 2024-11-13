@@ -34,10 +34,10 @@ class InAppPurchasesGatewayTest extends TestCase
         $inAppPurchasesPayload = new InAppPurchasesPayload(['purchase-1', 'purchase-2']);
 
         $inAppPurchaseFilterResponse = new InAppPurchasesResponse();
-        $inAppPurchaseFilterResponse->setPurchases([
+        $inAppPurchaseFilterResponse->purchases = [
             'purchase-1',
             'purchase-2',
-        ]);
+        ];
 
         $payloadService = $this->createMock(InAppPurchasesPayloadService::class);
         $payloadService
@@ -60,6 +60,6 @@ class InAppPurchasesGatewayTest extends TestCase
         $response = $gateway->process($inAppPurchasesPayload, $context, $app);
 
         static::assertSame($inAppPurchaseFilterResponse, $response);
-        static::assertCount(2, $response->getPurchases());
+        static::assertCount(2, $response->purchases);
     }
 }

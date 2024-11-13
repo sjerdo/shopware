@@ -14,21 +14,5 @@ class InAppPurchasesResponse extends Struct
     /**
      * @var array<int, string>
      */
-    protected array $purchases = [];
-
-    /**
-     * @return array<int, string>
-     */
-    public function getPurchases(): array
-    {
-        return $this->purchases;
-    }
-
-    /**
-     * @param array<int, string> $purchases
-     */
-    public function setPurchases(array $purchases): void
-    {
-        $this->purchases = $purchases;
-    }
+    public array $purchases = [];
 }

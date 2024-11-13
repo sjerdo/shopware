@@ -3,12 +3,10 @@
 namespace Shopware\Core\Framework\App\InAppPurchases\Payload;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Shopware\Core\Framework\App\AppEntity;
 use Shopware\Core\Framework\App\InAppPurchases\Response\InAppPurchasesResponse;
 use Shopware\Core\Framework\App\Payload\AppPayloadServiceHelper;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Log\ExceptionLogger;
 use Shopware\Core\Framework\Log\Package;
 
 /**
@@ -20,7 +18,6 @@ class InAppPurchasesPayloadService
     public function __construct(
         private readonly AppPayloadServiceHelper $helper,
         private readonly Client $client,
-        private readonly ExceptionLogger $logger,
     ) {
     }
 
@@ -28,25 +25,13 @@ class InAppPurchasesPayloadService
     {
         $options = $this->helper->createRequestOptions($payload, $app, $context);
 
-        try {
-            $response = $this->client->get($url, $options);
-            $content = $response->getBody()->getContents();
+        $response = $this->client->get($url, $options);
+        $content = \json_decode($response->getBody()->getContents(), true, 512, \JSON_THROW_ON_ERROR);
 
-            $response = (new InAppPurchasesResponse())->assign(\json_decode($content, true, 512, \JSON_THROW_ON_ERROR));
-
-            return $this->validateResponse($payload, $response);
-        } catch (GuzzleException $e) {
-            $this->logger->logOrThrowException($e);
-
-            throw $e;
+        if (\array_key_exists('purchases', $content) && \is_array($content['purchases'])) {
+            $content['purchases'] = array_values(array_intersect($payload->purchases, $content['purchases']));
         }
-    }
 
-    private function validateResponse(InAppPurchasesPayload $payload, InAppPurchasesResponse $response): InAppPurchasesResponse
-    {
-        $filteredPurchases = array_values(array_intersect($payload->getPurchases(), $response->getPurchases()));
-        $response->setPurchases($filteredPurchases);
-
-        return $response;
+        return (new InAppPurchasesResponse())->assign($content);
     }
 }

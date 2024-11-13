@@ -3,7 +3,6 @@
 namespace Shopware\Tests\Unit\Core\Framework\App\InAppPurchases\Payload;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -17,7 +16,6 @@ use Shopware\Core\Framework\App\Payload\AppPayloadServiceHelper;
 use Shopware\Core\Framework\App\ShopId\ShopIdProvider;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
-use Shopware\Core\Framework\Log\ExceptionLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
@@ -71,7 +69,6 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $filterPayloadService = new InAppPurchasesPayloadService(
             $appPayloadServiceHelper,
             new Client(['handler' => new MockHandler([new Response(200, [], $responseContent)])]),
-            $this->createMock(ExceptionLogger::class),
         );
 
         $url = 'https://example.com/filter-mah-features';
@@ -92,7 +89,7 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             $context
         );
 
-        $actualPurchases = $filterResponse->getPurchases();
+        $actualPurchases = $filterResponse->purchases;
         static::assertCount(2, $actualPurchases);
         static::assertSame('purchase-1', $actualPurchases[0]);
         static::assertSame('purchase-2', $actualPurchases[1]);
@@ -132,7 +129,6 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $filterPayloadService = new InAppPurchasesPayloadService(
             $appPayloadServiceHelper,
             new Client(['handler' => new MockHandler([new Response(200, [], $responseContent)])]),
-            $this->createMock(ExceptionLogger::class),
         );
 
         $url = 'https://example.com/filter-mah-features';
@@ -153,45 +149,9 @@ class InAppPurchasesPayloadServiceTest extends TestCase
             $context
         );
 
-        $actualPurchases = $filterResponse->getPurchases();
+        $actualPurchases = $filterResponse->purchases;
         static::assertCount(1, $actualPurchases);
         static::assertSame('purchase-2', $actualPurchases[0]);
-    }
-
-    public function testGuzzleException(): void
-    {
-        static::expectException(TransferException::class);
-        static::expectExceptionMessage('Something went wrong');
-
-        $client = new Client([
-            'handler' => function (): void {
-                throw new TransferException('Something went wrong');
-            },
-        ]);
-
-        $filterPayloadService = new InAppPurchasesPayloadService(
-            $this->createMock(AppPayloadServiceHelper::class),
-            $client,
-            $this->createMock(ExceptionLogger::class),
-        );
-
-        $url = 'https://example.com/filter-mah-features';
-
-        $app = new AppEntity();
-        $app->setName('TestApp');
-        $app->setId($this->ids->get('app'));
-        $app->setVersion('6.6-dev');
-        $app->setAppSecret('very-secret');
-        $app->setInAppPurchasesGatewayUrl($url);
-
-        $payload = $this->createMock(InAppPurchasesPayload::class);
-
-        $filterPayloadService->request(
-            'https://example.com/filter-mah-features',
-            $payload,
-            $app,
-            Context::createDefaultContext()
-        );
     }
 
     public function testAppSecretMissing(): void
@@ -221,7 +181,6 @@ class InAppPurchasesPayloadServiceTest extends TestCase
         $filterPayloadService = new InAppPurchasesPayloadService(
             $appPayloadServiceHelper,
             new Client(),
-            $this->createMock(ExceptionLogger::class),
         );
 
         $payload = $this->createMock(InAppPurchasesPayload::class);

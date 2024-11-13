@@ -11,6 +11,9 @@ use Shopware\Core\Framework\Log\Package;
 #[Package('core')]
 class Gateways extends XmlElement
 {
+    /**
+     * @var array<string, class-string<AbstractGateway>>
+     */
     private const GATEWAYS = [
         'checkout' => CheckoutGateway::class,
         'inAppPurchases' => InAppPurchasesGateway::class,
@@ -31,31 +34,19 @@ class Gateways extends XmlElement
     }
 
     /**
-     * @return array<'checkout'|'inAppPurchases', XmlElement>
+     * @return array<string, AbstractGateway>
      */
     protected static function parse(\DOMElement $element): array
     {
         $gateways = [];
 
-        foreach (self::GATEWAYS as $tagName => $class) {
-            $gateway = self::parseGatewayElement($tagName, $element, $class);
-            if ($gateway !== null) {
-                $gateways[$tagName] = $gateway;
+        foreach (self::GATEWAYS as $tagName => $gatewayClass) {
+            $targetElement = $element->getElementsByTagName($tagName)->item(0);
+            if ($targetElement !== null) {
+                $gateways[$tagName] = $gatewayClass::fromXml($targetElement);
             }
         }
 
         return $gateways;
-    }
-
-    private static function parseGatewayElement(string $name, \DOMElement $element, string $class): ?XmlElement
-    {
-        $targetElement = $element->getElementsByTagName($name)->item(0);
-        if ($targetElement) {
-            if (class_exists($class) && method_exists($class, 'fromXml')) {
-                return $class::fromXml($targetElement);
-            }
-        }
-
-        return null;
     }
 }
