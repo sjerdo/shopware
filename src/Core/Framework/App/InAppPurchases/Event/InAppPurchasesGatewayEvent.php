@@ -19,12 +19,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class InAppPurchasesGatewayEvent extends Event
 {
     public function __construct(
-        private readonly InAppPurchasesResponse $response,
+        public readonly InAppPurchasesResponse $response,
     ) {
-    }
-
-    public function getResponse(): InAppPurchasesResponse
-    {
-        return $this->response;
     }
 }

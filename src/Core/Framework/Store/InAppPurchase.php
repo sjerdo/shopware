@@ -2,7 +2,6 @@
 
 namespace Shopware\Core\Framework\Store;
 
-use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Store\InAppPurchase\Services\InAppPurchaseProvider;
 use Symfony\Contracts\Service\ResetInterface;

@@ -18,6 +18,6 @@ class InAppPurchasesPayloadTest extends TestCase
     {
         $payload = new InAppPurchasesPayload(['purchase-1', 'purchase-2']);
 
-        static::assertSame(['purchase-1', 'purchase-2'], $payload->getPurchases());
+        static::assertSame(['purchase-1', 'purchase-2'], $payload->purchases);
     }
 }

@@ -25,24 +25,24 @@ class InAppPurchasesResponseTest extends TestCase
 
         $response = (new InAppPurchasesResponse())->assign($arrayStruct);
 
-        static::assertCount(2, $response->getPurchases());
+        static::assertCount(2, $response->purchases);
 
-        static::assertEquals('purchase-1', $response->getPurchases()[0]);
-        static::assertEquals('purchase-2', $response->getPurchases()[1]);
+        static::assertEquals('purchase-1', $response->purchases[0]);
+        static::assertEquals('purchase-2', $response->purchases[1]);
     }
 
     public function testSetters(): void
     {
         $response = new InAppPurchasesResponse();
 
-        $response->setPurchases([
+        $response->purchases = [
             'purchase-1',
             'purchase-2',
-        ]);
+        ];
 
-        static::assertCount(2, $response->getPurchases());
+        static::assertCount(2, $response->purchases);
 
-        static::assertEquals('purchase-1', $response->getPurchases()[0]);
-        static::assertEquals('purchase-2', $response->getPurchases()[1]);
+        static::assertEquals('purchase-1', $response->purchases[0]);
+        static::assertEquals('purchase-2', $response->purchases[1]);
     }
 }
