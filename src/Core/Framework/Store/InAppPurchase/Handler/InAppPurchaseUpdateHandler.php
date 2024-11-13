@@ -29,6 +29,6 @@ final class InAppPurchaseUpdateHandler extends ScheduledTaskHandler
     public function run(): void
     {
         $context = Context::createCLIContext();
-        $this->iapUpdater->updateActiveInAppPurchases($context);
+        $this->iapUpdater->update($context);
     }
 }
