@@ -40,6 +40,9 @@
         }
     },
     "config": {
+        "audit": {
+            "abandoned": "report"
+        },
         "sort-packages": true,
         "process-timeout": 7200,
         "allow-plugins": {

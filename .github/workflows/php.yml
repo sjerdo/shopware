@@ -213,3 +213,23 @@ jobs:
       - name: Check license
         if: steps.changed-composer-json.outputs.any_changed == 'true'
         run: vendor/bin/composer-license-checker check $(xargs -n1 echo -a < .allowed-licenses)
+
+  composer-audit:
+    runs-on: ubuntu-latest
+    name: "composer audit"
+    steps:
+      - name: Clone shopware
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install Dependencies
+        run: |
+          composer install
+
+      - name: Install Dependencies
+        run: |
+          composer audit
