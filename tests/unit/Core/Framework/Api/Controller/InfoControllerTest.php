@@ -51,7 +51,7 @@ class InfoControllerTest extends TestCase
                 ['shopware.admin_worker.enable_notification_worker', true],
                 ['shopware.admin_worker.enable_queue_stats_worker', true],
                 ['shopware.admin_worker.enable_admin_worker', true],
-                ['kernel.shopware_version', '6.6.0.0-dev'],
+                ['kernel.shopware_version', '6.6.9999999-dev'],
                 ['kernel.shopware_version_revision', 'PHPUnit'],
                 ['shopware.media.enable_url_upload_feature', true],
             ]);
@@ -77,7 +77,7 @@ class InfoControllerTest extends TestCase
         $data = json_decode($content, true);
         static::assertIsArray($data);
         static::assertArrayHasKey('version', $data);
-        static::assertSame('6.6.0.0-dev', $data['version']);
+        static::assertSame('6.6.9999999.9999999-dev', $data['version']);
         static::assertArrayHasKey('versionRevision', $data);
         static::assertSame('PHPUnit', $data['versionRevision']);
         static::assertArrayHasKey('adminWorker', $data);
