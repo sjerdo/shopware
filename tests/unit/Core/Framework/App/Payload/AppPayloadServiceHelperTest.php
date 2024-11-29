@@ -15,6 +15,7 @@ use Shopware\Core\Framework\App\TaxProvider\Payload\TaxProviderPayload;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Struct\Serializer\StructNormalizer;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\TaxProvider\TaxProviderDefinition;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
@@ -36,6 +37,11 @@ class AppPayloadServiceHelperTest extends TestCase
 
     public function testBuildSource(): void
     {
+        $inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures([
+            'TestApp' => ['purchase-1', 'purchase-2'],
+            'AnotherApp' => ['purchase-3'],
+        ]);
+
         $shopIdProvider = $this->createMock(ShopIdProvider::class);
         $shopIdProvider
             ->method('getShopId')
@@ -45,10 +51,12 @@ class AppPayloadServiceHelperTest extends TestCase
             $this->createMock(DefinitionInstanceRegistry::class),
             $this->createMock(JsonEntityEncoder::class),
             $shopIdProvider,
+            $inAppPurchase,
             'https://shopware.com'
         );
 
         $app = new AppEntity();
+        $app->setId('TestApp');
         $app->setVersion('1.0.0');
 
         $source = $appPayloadServiceHelper->buildSource($app);
@@ -56,6 +64,7 @@ class AppPayloadServiceHelperTest extends TestCase
         static::assertSame('https://shopware.com', $source->getUrl());
         static::assertSame($this->ids->get('shop-id'), $source->getShopId());
         static::assertSame('1.0.0', $source->getAppVersion());
+        static::assertSame(['purchase-1', 'purchase-2'], $source->getInAppPurchases());
     }
 
     public function testEncode(): void
@@ -84,6 +93,7 @@ class AppPayloadServiceHelperTest extends TestCase
             $definitionInstanceRegistry,
             $entityEncoder,
             $this->createMock(ShopIdProvider::class),
+            StaticInAppPurchaseFactory::createWithFeatures(),
             'https://shopware.com'
         );
 

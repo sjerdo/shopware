@@ -15,6 +15,8 @@ use Shopware\Core\Framework\Event\BusinessEventCollector;
 use Shopware\Core\Framework\Increment\IncrementGatewayRegistry;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin;
+use Shopware\Core\Framework\Store\InAppPurchase;
+use Shopware\Core\Framework\Test\Store\StaticInAppPurchaseFactory;
 use Shopware\Core\Framework\Test\TestCaseHelper\ReflectionHelper;
 use Shopware\Core\Kernel;
 use Shopware\Core\Maintenance\System\Service\AppUrlVerifier;
@@ -38,6 +40,8 @@ class InfoControllerTest extends TestCase
     private Kernel&MockObject $kernelMock;
 
     private RouterInterface&MockObject $routerMock;
+
+    private InAppPurchase $inAppPurchase;
 
     public function testConfig(): void
     {
@@ -125,6 +129,13 @@ class InfoControllerTest extends TestCase
         static::assertFalse($settings['private_allowed_extensions']);
         static::assertArrayHasKey('enableHtmlSanitizer', $settings);
         static::assertTrue($settings['enableHtmlSanitizer']);
+
+        static::assertArrayHasKey('inAppPurchases', $data);
+        $inAppPurchases = $data['inAppPurchases'];
+        static::assertIsArray($inAppPurchases);
+        static::assertCount(1, $inAppPurchases);
+        static::assertArrayHasKey('SwagApp', $inAppPurchases);
+        static::assertSame(['SwagApp_premium'], $inAppPurchases['SwagApp']);
     }
 
     private function createInstance(): void
@@ -132,6 +143,7 @@ class InfoControllerTest extends TestCase
         $this->parameterBagMock = $this->createMock(ParameterBagInterface::class);
         $this->kernelMock = $this->createMock(Kernel::class);
         $this->routerMock = $this->createMock(RouterInterface::class);
+        $this->inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures(['SwagApp' => ['SwagApp_premium']]);
 
         $this->infoController = new InfoController(
             $this->createMock(DefinitionService::class),
@@ -145,7 +157,8 @@ class InfoControllerTest extends TestCase
             $this->routerMock,
             $this->createMock(FlowActionCollector::class),
             new StaticSystemConfigService(),
-            $this->createMock(ApiRouteInfoResolver::class)
+            $this->createMock(ApiRouteInfoResolver::class),
+            $this->inAppPurchase,
         );
     }
 }
