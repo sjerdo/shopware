@@ -24,6 +24,7 @@ use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\OrderAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Shopware\Core\Framework\Plugin;
+use Shopware\Core\Framework\Store\InAppPurchase;
 use Shopware\Core\Framework\Test\TestCaseBase\AdminFunctionalTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Kernel;
@@ -114,6 +115,7 @@ class InfoControllerTest extends TestCase
                 'enableStagingMode' => false,
                 'disableExtensionManagement' => false,
             ],
+            'inAppPurchases' => [],
         ];
 
         $url = '/api/_info/config';
@@ -389,6 +391,7 @@ class InfoControllerTest extends TestCase
             $eventCollector,
             static::getContainer()->get(SystemConfigService::class),
             static::getContainer()->get(ApiRouteInfoResolver::class),
+            $this->getContainer()->get(InAppPurchase::class),
         );
 
         $infoController->setContainer($this->createMock(Container::class));
@@ -453,6 +456,7 @@ class InfoControllerTest extends TestCase
             $eventCollector,
             static::getContainer()->get(SystemConfigService::class),
             static::getContainer()->get(ApiRouteInfoResolver::class),
+            $this->getContainer()->get(InAppPurchase::class),
         );
 
         $infoController->setContainer($this->createMock(Container::class));
@@ -531,6 +535,7 @@ class InfoControllerTest extends TestCase
             $eventCollector,
             static::getContainer()->get(SystemConfigService::class),
             static::getContainer()->get(ApiRouteInfoResolver::class),
+            $this->getContainer()->get(InAppPurchase::class),
         );
 
         $infoController->setContainer($this->createMock(Container::class));

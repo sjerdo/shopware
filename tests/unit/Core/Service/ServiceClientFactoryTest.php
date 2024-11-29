@@ -84,6 +84,7 @@ class ServiceClientFactoryTest extends TestCase
     {
         $entry = new ServiceRegistryEntry('serviceA', 'description', 'https://example.com', 'appEndpoint', true, 'licenseSyncEndPoint');
         $app = new AppEntity();
+        $app->setId(Uuid::randomHex());
         $app->setSelfManaged(true);
         $app->setAppSecret('app_secret');
         $context = Context::createDefaultContext();
@@ -124,6 +125,7 @@ class ServiceClientFactoryTest extends TestCase
     {
         $entry = new ServiceRegistryEntry('serviceA', 'description', 'https://example.com', 'appEndpoint', true, 'licenseSyncEndPoint');
         $app = new AppEntity();
+        $app->setId(Uuid::randomHex());
         $app->setSelfManaged(true);
         $app->setAppSecret('app_secret');
 
