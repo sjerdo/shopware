@@ -190,7 +190,7 @@ class ExecutorTest extends TestCase
             'url' => $shopUrl,
             'appVersion' => $appVersion,
             'shopId' => $shopId,
-            'inAppPurchases' => [],
+            'inAppPurchases' => null,
         ];
         $expectedData = [
             'ids' => $affectedIds,

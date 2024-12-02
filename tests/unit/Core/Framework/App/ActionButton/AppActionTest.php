@@ -31,6 +31,7 @@ class AppActionTest extends TestCase
         $ids = [Uuid::randomHex()];
         $app = new AppEntity();
         $app->setAppSecret('s3cr3t');
+        $app->setName('TestApp');
         $result = new AppAction(
             $app,
             new Source($shopUrl, $shopId, $appVersion),
@@ -46,7 +47,7 @@ class AppActionTest extends TestCase
                 'url' => $shopUrl,
                 'appVersion' => $appVersion,
                 'shopId' => $shopId,
-                'inAppPurchases' => [],
+                'inAppPurchases' => null,
             ],
             'data' => [
                 'ids' => $ids,

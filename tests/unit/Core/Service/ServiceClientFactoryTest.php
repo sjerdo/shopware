@@ -87,6 +87,7 @@ class ServiceClientFactoryTest extends TestCase
         $app->setId(Uuid::randomHex());
         $app->setSelfManaged(true);
         $app->setAppSecret('app_secret');
+        $app->setName('TestApp');
         $context = Context::createDefaultContext();
 
         $serviceClientRegistry = static::createMock(ServiceRegistryClient::class);
@@ -128,6 +129,7 @@ class ServiceClientFactoryTest extends TestCase
         $app->setId(Uuid::randomHex());
         $app->setSelfManaged(true);
         $app->setAppSecret('app_secret');
+        $app->setName('TestApp');
 
         $context = Context::createDefaultContext();
 
