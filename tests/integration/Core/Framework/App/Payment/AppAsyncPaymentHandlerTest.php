@@ -263,7 +263,7 @@ class AppAsyncPaymentHandlerTest extends AbstractAppPaymentHandlerTestCase
             'url' => $this->shopUrl,
             'shopId' => $this->shopIdProvider->getShopId(),
             'appVersion' => '1.0.0',
-            'inAppPurchases' => [],
+            'inAppPurchases' => null,
         ], $content['source']);
         static::assertArrayHasKey('orderTransaction', $content);
         static::assertIsArray($content['orderTransaction']);
@@ -371,7 +371,7 @@ class AppAsyncPaymentHandlerTest extends AbstractAppPaymentHandlerTestCase
             'url' => $this->shopUrl,
             'shopId' => $this->shopIdProvider->getShopId(),
             'appVersion' => '1.0.0',
-            'inAppPurchases' => [],
+            'inAppPurchases' => null,
         ], $content['source']);
         static::assertArrayHasKey('returnUrl', $content);
         static::assertNotEmpty($content['returnUrl']);

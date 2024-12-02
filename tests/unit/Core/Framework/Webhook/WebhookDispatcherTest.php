@@ -94,7 +94,7 @@ class WebhookDispatcherTest extends TestCase
                     'appVersion' => $webhookEntity->getApp()?->getVersion(),
                     'shopId' => 'foobar',
                     'action' => $event->getName(),
-                    'inAppPurchases' => [],
+                    'inAppPurchases' => null,
                 ],
             ], \JSON_THROW_ON_ERROR)
         );
@@ -153,7 +153,7 @@ class WebhookDispatcherTest extends TestCase
                 'appVersion' => $webhookEntity->getApp()?->getVersion(),
                 'shopId' => 'foobar',
                 'action' => $event->getName(),
-                'inAppPurchases' => [],
+                'inAppPurchases' => null,
             ],
         ], $payload);
 

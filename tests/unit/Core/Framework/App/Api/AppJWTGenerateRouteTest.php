@@ -50,10 +50,7 @@ class AppJWTGenerateRouteTest extends TestCase
 
     public function testGenerate(): void
     {
-        $inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures([
-            'extension-1' => ['active-license-1', 'active-license-2'],
-            'extension-2' => ['active-license-3'],
-        ]);
+        $inAppPurchase = StaticInAppPurchaseFactory::createWithFeatures(['extension-1' => ['purchase-1', 'purchase-2'], 'extension-2' => ['purchase-3']]);
 
         $privileges = [
             'sales_channel:read',
@@ -96,6 +93,6 @@ class AppJWTGenerateRouteTest extends TestCase
         static::assertSame($context->getShippingMethod()->getId(), $payload['shippingMethodId']);
         static::assertSame($context->getCurrency()->getId(), $payload['currencyId']);
         static::assertSame($context->getLanguageId(), $payload['languageId']);
-        static::assertSame(['active-license-1', 'active-license-2'], $payload['inAppPurchases']);
+        static::assertSame('a6a4063ffda65516983ad40e8dc91db6', $payload['inAppPurchases']);
     }
 }
